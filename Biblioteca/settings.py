@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
+# biblioteca/settings.py (cerca de la línea 40)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Crud', 
+    # ¡Asegúrate que tu aplicación Crud está aquí!
+    'Crud',
 ]
 
 MIDDLEWARE = [
@@ -74,10 +75,19 @@ WSGI_APPLICATION = 'Biblioteca.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql', # Motor de MySQL
+        'NAME': 'ms_usuarios_biblioteca',     # Nombre de la DB
+        'USER': 'ms_usuarios_dev',            # Tu usuario dedicado
+        'PASSWORD': 'usuarios123',   # Contraseña de ese usuario
+        'HOST': '127.0.0.1',                  # Conexión local (o el nombre si usas Docker)
+        'PORT': '3306',                       # Puerto de MySQL
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
     }
 }
 
@@ -122,3 +132,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# biblioteca/settings.py (al final del archivo)
+AUTH_USER_MODEL = 'Crud.Usuario'
