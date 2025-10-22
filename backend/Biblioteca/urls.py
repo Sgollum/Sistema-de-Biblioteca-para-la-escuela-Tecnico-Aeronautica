@@ -1,22 +1,18 @@
-# Biblioteca/urls.py
+# backend/Biblioteca/urls.py
 
 from django.contrib import admin
-from django.urls import path, include 
-# Asegúrate de que los import 'path' e 'include' estén presentes
+from django.urls import path, include
+from rest_framework.authtoken.views import obtain_auth_token 
 
 urlpatterns = [
-    # Ruta del Panel de Administración (ya validada)
-    path('admin/', admin.site.urls), 
+    path('admin/', admin.site.urls),
+    
+    # 💡 AÑADIR ESTA LÍNEA: Endpoint de LOGIN que devuelve el token
+    path('api/login/', obtain_auth_token, name='api_login'), 
 
-    # 1. Microservicio de Usuarios (Autenticación, Roles, CRUD de Usuarios)
+    # Rutas de tus microservicios (ya existentes)
     path('api/usuarios/', include('MS_Usuarios.urls')),
-
-    # 2. Microservicio de Catálogo (Gestión de Libros)
     path('api/catalogo/', include('MS_Catalogo.urls')),
-
-    # 3. Microservicio de Préstamos
     path('api/prestamos/', include('MS_Prestamos.urls')),
-
-    # 4. Microservicio de Reportes
     path('api/reportes/', include('MS_Reportes.urls')),
 ]
