@@ -1,48 +1,52 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
-// 💡 NUEVAS IMPORTACIONES: Para formularios y peticiones HTTP
 import { FormsModule } from '@angular/forms'; 
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router'; // Lo añadimos para una futura redirección
+import { Router } from '@angular/router'; // Necesario para la redirección
 
 @Component({
   selector: 'app-login', 
   standalone: true, 
-  // 💡 Añadir FormsModule y HttpClientModule
+  // Aseguramos que FormsModule, HttpClientModule y CommonModule estén importados
   imports: [CommonModule, FormsModule, HttpClientModule], 
-  templateUrl: './login.component.html',
-  styleUrl: './login.css' // O './login.css' si ese es el nombre
+  // 💡 NOMBRES DE ARCHIVO CORREGIDOS (según tu estructura actual)
+  templateUrl: './login.component.html', // Asumiendo que has corregido el nombre a .component.html
+  styleUrl: './login.css' // Asumiendo que el CSS se llama 'login.css'
 })
 export class LoginComponent { 
-  // 1. Definir variables y servicios inyectados
+  
+  // Inyectamos HttpClient para hacer peticiones y Router para la navegación
   constructor(private http: HttpClient, private router: Router) {}
 
   username = '';
   password = '';
   loginError = '';
   
-  // 2. Método de Login
+  // Método que maneja el envío del formulario
   onLogin() {
-    this.loginError = ''; // Limpiar errores anteriores
+    this.loginError = ''; 
     
     const loginData = {
       username: this.username,
       password: this.password
     };
     
-    // Petición POST al endpoint de Django (PUERTO 8000)
+    // Petición POST al endpoint de Django (http://127.0.0.1:8000/api/login/)
     this.http.post('http://127.0.0.1:8000/api/login/', loginData)
       .subscribe({
         next: (response: any) => {
-          // Si es exitoso, Django devuelve un token
           const token = response.token;
-          console.log('✅ CONEXIÓN EXITOSA. TOKEN RECIBIDO:', token);
-          // Aquí podríamos redirigir, pero por ahora solo registramos
-          // this.router.navigate(['/dashboard']); 
+          console.log('✅ LOGIN EXITOSO. TOKEN RECIBIDO Y GUARDADO.', token);
+          
+          // 💡 1. GUARDAR el token en el almacenamiento local
+          localStorage.setItem('auth_token', token);
+          
+          // 💡 2. REDIRIGIR al usuario a la ruta principal de la aplicación
+          this.router.navigate(['/']); 
         },
         error: (error) => {
-          // Si Django devuelve 400 (Bad Request), es un error de credenciales
-          this.loginError = '❌ Error de credenciales. Intente de nuevo.';
+          // El error 400 (Bad Request) o el 500 (Server Error)
+          this.loginError = '❌ Error de credenciales o de servidor. Verifique la consola de Django.';
           console.error('Error de login:', error);
         }
       });
