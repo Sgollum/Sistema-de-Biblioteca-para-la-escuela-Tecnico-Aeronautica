@@ -1,25 +1,22 @@
-"""
-URL configuration for Biblioteca project.
+# Biblioteca/urls.py
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
-from . import views
-from django.urls import path, include
+from django.urls import path, include 
+# Asegúrate de que los import 'path' e 'include' estén presentes
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.home, name='Index'),
-    ##path('app/', include('app.urls'),)
+    # Ruta del Panel de Administración (ya validada)
+    path('admin/', admin.site.urls), 
+
+    # 1. Microservicio de Usuarios (Autenticación, Roles, CRUD de Usuarios)
+    path('api/usuarios/', include('MS_Usuarios.urls')),
+
+    # 2. Microservicio de Catálogo (Gestión de Libros)
+    path('api/catalogo/', include('MS_Catalogo.urls')),
+
+    # 3. Microservicio de Préstamos
+    path('api/prestamos/', include('MS_Prestamos.urls')),
+
+    # 4. Microservicio de Reportes
+    path('api/reportes/', include('MS_Reportes.urls')),
 ]

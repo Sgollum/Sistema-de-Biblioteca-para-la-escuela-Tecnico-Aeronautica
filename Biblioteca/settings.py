@@ -37,8 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # ¡Asegúrate que tu aplicación Crud está aquí!
-    'Crud',
+    'MS_Usuarios','MS_Catalogo','MS_Prestamos','MS_Reportes',
 ]
 
 MIDDLEWARE = [
@@ -134,4 +133,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # biblioteca/settings.py (al final del archivo)
-AUTH_USER_MODEL = 'Crud.Usuario'
+AUTH_USER_MODEL = 'MS_Usuarios.Usuario'
