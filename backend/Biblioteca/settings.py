@@ -73,17 +73,29 @@ WSGI_APPLICATION = 'Biblioteca.wsgi.application'
 
 # Database
 
+# backend/Biblioteca/settings.py (Alrededor de la línea 100)
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Motor de MySQL
-        'NAME': 'ms_usuarios_biblioteca',     # Nombre de la DB
-        'USER': 'ms_usuarios_dev',            # Tu usuario dedicado
-        'PASSWORD': 'usuarios123',            # Contraseña de ese usuario
-        'HOST': '127.0.0.1',                  # Conexión local
-        'PORT': '3306',                       # Puerto de MySQL
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'ms_usuarios_biblioteca',      # DB para Usuarios (default)
+        'USER': 'ms_usuarios_dev',            
+        'PASSWORD': 'usuarios123',            
+        'HOST': '127.0.0.1',                  
+        'PORT': '3306',                       
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         }
+    },
+    
+    # 💡 NUEVA BASE DE DATOS PARA EL CATÁLOGO
+    'catalogo_db': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ms_catalogo_biblioteca',  # <<< Nombre de la nueva DB
+        'USER': 'ms_usuarios_dev',        # Puedes usar el mismo usuario MySQL
+        'PASSWORD': 'usuarios123',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
@@ -149,3 +161,4 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True 
 # La opción CORS_ALLOW_ALL_ORIGINS = True fue eliminada para mayor seguridad.
+DATABASE_ROUTERS = ['Biblioteca.db_routers.MicroserviceRouter']

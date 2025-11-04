@@ -14,6 +14,7 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
+            "polyfills": ["src/polyfills.ts"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -91,3 +92,4 @@
     "analytics": "62143c62-15fb-4979-8074-dd4ab7b9a43c"
   }
 }
+

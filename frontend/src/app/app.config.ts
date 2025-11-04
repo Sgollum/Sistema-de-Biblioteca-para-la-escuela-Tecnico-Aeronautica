@@ -1,13 +1,21 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+// frontend/src/app/app.config.ts
 
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+
+// 💡 CORRECCIÓN DE LA RUTA: Debe ser desde el directorio actual './core/...'
+import { authTokenInterceptor } from './core/interceptors/auth-token-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideZonelessChangeDetection(),
-    provideRouter(routes), provideClientHydration(withEventReplay())
+    provideRouter(routes),
+    // 💡 REGISTRAR HTTP CLIENTE Y EL INTERCEPTOR
+    provideHttpClient(
+      withInterceptors([
+        authTokenInterceptor // Registrar el interceptor aquí
+      ])
+    )
   ]
 };
