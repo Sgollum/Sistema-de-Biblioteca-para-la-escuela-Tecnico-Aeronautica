@@ -162,3 +162,6 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True 
 # La opción CORS_ALLOW_ALL_ORIGINS = True fue eliminada para mayor seguridad.
 DATABASE_ROUTERS = ['Biblioteca.db_routers.MicroserviceRouter']
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

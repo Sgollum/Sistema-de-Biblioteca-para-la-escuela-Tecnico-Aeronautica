@@ -1,3 +1,39 @@
-<h1>BIENVENIDO AL DASHBOARD</h1>
-<p>Has iniciado sesión correctamente y tu token está guardado.</p>
-<button (click)="logout()">Cerrar Sesión</button>
+<div class="search-bar-container">
+    <input 
+        type="text" 
+        placeholder="Buscar por Título, Autor o ISBN..."
+        
+        [(ngModel)]="searchTerm"
+        
+        (ngModelChange)="onSearch()" 
+        
+        class="form-control"
+    />
+</div>
+
+<div *ngIf="isLoading" class="loading-message">
+    Cargando catálogo...
+</div>
+
+<div *ngIf="error" class="error-message">
+    {{ error }}
+</div>
+
+<div *ngIf="libros.length > 0 && !isLoading" class="catalogo-list">
+    <h3>Mostrando {{ libros.length }} de {{ libros.length }} libros</h3>
+    
+    <div *ngFor="let libro of libros" class="book-item">
+        <img [src]="libro.imagen_url" alt="Portada de {{ libro.titulo }}" class="book-cover">
+        
+        <h4>{{ libro.titulo }}</h4>
+        <p>Autor: {{ libro.autor_nombre }}</p>
+        <p>Categoría: {{ libro.categoria_nombre }}</p>
+        <p>ISBN: {{ libro.isbn }}</p>
+        <p>Disponibles: {{ libro.copias_disponibles }}</p>
+        
+        </div>
+</div>
+
+<div *ngIf="libros.length === 0 && !isLoading" class="no-results">
+    No se encontraron libros. Intente otra búsqueda.
+</div>
