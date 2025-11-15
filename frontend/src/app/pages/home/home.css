@@ -1,135 +1,61 @@
-/* Estilos generales del contenedor del dashboard */
-.dashboard-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa; /* Fondo claro para el cuerpo */
+/* ------------------------------------------------------------------------- */
+/* 1. ESTILOS GLOBALES PARA EL COMPONENTE HOME */
+/* ------------------------------------------------------------------------- */
+:host {
+    /* Define la fuente Inter, que es moderna y legible */
+    font-family: 'Inter', sans-serif;
+    /* Un poco de fondo suave para que las tarjetas blancas resalten */
+    background-color: #f7f9fb;
+    display: block;
 }
 
-/* Encabezado principal */
-h2 {
-    color: #007bff;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+/* ------------------------------------------------------------------------- */
+/* 2. ESTILOS ESPECÍFICOS DE LA TARJETA DE LIBRO */
+/* ------------------------------------------------------------------------- */
+.rounded-xl {
+    /* Asegura que todos los bordes sean uniformemente redondeados */
+    border-radius: 1rem; /* 16px */
 }
 
-/* Barra de búsqueda */
-.search-bar-container {
-    margin-bottom: 30px;
+/* Transición sutil para el efecto hover de la tarjeta */
+.shadow-lg {
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
-.form-control {
-    width: 100%;
-    padding: 12px 20px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
+/* Efecto al pasar el ratón: levanta ligeramente la tarjeta y aumenta la sombra */
+.shadow-lg:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Sombra más fuerte */
+    transform: translateY(-3px); /* Pequeño movimiento hacia arriba */
 }
 
-.form-control:focus {
-    border-color: #007bff;
+/* Imagen de la portada */
+.object-cover {
+    /* Garantiza una transición suave de la imagen */
+    transition: transform 0.5s ease;
+}
+
+/* Efecto sutil de zoom en la imagen al pasar el ratón por la tarjeta */
+.shadow-lg:hover img {
+    transform: scale(1.03);
+}
+
+/* ------------------------------------------------------------------------- */
+/* 3. ESTILOS PARA ELEMENTOS DE FORMULARIO */
+/* ------------------------------------------------------------------------- */
+
+/* Input de búsqueda para un estilo más limpio */
+.focus\:border-blue-500:focus {
     outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* Anillo de foco azul suave */
+    border-color: #3b82f6; /* Color del borde primario */
 }
 
-/* Contenedor de la lista de libros */
-.catalogo-list {
-    display: grid;
-    /* Define 3 columnas por defecto, ajustables al tamaño de la pantalla */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 30px;
-    margin-top: 20px;
+/* Estilo para el botón de acción principal (Prestar) */
+.bg-green-500 {
+    font-weight: 600;
 }
 
-/* Estilo para cada tarjeta de libro */
-.book-item {
-    background-color: #ffffff;
-    border: 1px solid #e9ecef;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: flex;
-    flex-direction: column;
-}
-
-.book-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-/* Estilo de la imagen de portada */
-.book-cover {
-    width: 100%;
-    height: auto;
-    max-height: 350px; /* Limitar la altura para uniformidad */
-    object-fit: contain; /* Asegura que la imagen se ajuste sin recortarse */
-    border-radius: 6px;
-    margin-bottom: 15px;
-}
-
-/* Títulos y metadatos del libro */
-.book-item h4 {
-    color: #343a40;
-    margin-top: 0;
-    font-size: 1.25rem;
-    min-height: 60px; /* Asegura un espacio uniforme para títulos largos */
-}
-
-.book-item p {
-    margin: 4px 0;
-    color: #6c757d;
-    font-size: 0.9rem;
-}
-
-.book-item p strong {
-    color: #495057;
-}
-
-/* Acciones (botones) */
-.actions {
-    margin-top: auto; /* Empuja los botones al final de la tarjeta */
-    padding-top: 15px;
-    border-top: 1px dashed #dee2e6;
-    display: flex;
-    gap: 10px;
-}
-
-.actions button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
-}
-
-.actions button:first-child { /* Botón Editar */
-    background-color: #28a745; /* Verde */
-    color: white;
-}
-
-.actions button:last-child { /* Botón Eliminar */
-    background-color: #dc3545; /* Rojo */
-    color: white;
-}
-
-.actions button:hover:first-child {
-    background-color: #218838;
-}
-
-.actions button:hover:last-child {
-    background-color: #c82333;
-}
-
-/* Mensajes de estado */
-.loading-message, .error-message, .no-results {
-    text-align: center;
-    padding: 20px;
-    font-size: 1.1rem;
-    color: #6c757d;
+/* Estilo para los botones de gestión (Editar/Eliminar) */
+.flex-1 {
+    transition: background-color 0.2s ease;
 }

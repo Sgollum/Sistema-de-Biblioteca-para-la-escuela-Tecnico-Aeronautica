@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LoginComponent } from './login.component'; // Importa la clase correcta
+import { LoginComponent } from './login'; // Importa la clase correcta
 
 describe('LoginComponent', () => { // Usamos el nombre de clase correcto
   let component: LoginComponent;

@@ -1,38 +1,41 @@
-// frontend/src/app/core/services/catalogo.ts
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Libro } from '../models/libro.model';
+import { AuthService } from './auth.service';
 
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs'; 
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api/catalogo'; 
+const API_URL = 'http://localhost:8000/api/catalogo';
 
-// 💡 CORRECCIÓN: Se añade el campo 'imagen_url' al modelo Libro
-export interface Libro {
-  id: number;
-  titulo: string;
-  autor_nombre: string;
-  categoria_nombre: string;
-  isbn: string;
-  copias_disponibles: number;
-  imagen_url: string; // 💡 ¡CRUCIAL! Este campo es necesario para el frontend
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class CatalogoService {
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
-  constructor(private http: HttpClient) { }
+  // Función auxiliar para obtener las cabeceras de autorización
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
 
-  getLibros(): Observable<Libro[]> {
-    // 💡 Método para obtener todos los libros
-    return this.http.get<Libro[]>(`${API_BASE_URL}/libros/`);
+  // Método para obtener todos los libros desde la API con token
+  cargarTodosLosLibros(): Observable<Libro[]> {
+    const headers = this.getAuthHeaders();
+    // La ruta ahora es: API_URL + '/libros/' 
+    // Que resulta en: 'http://localhost:8000/api/catalogo/libros/'
+    return this.http.get<Libro[]>(`${API_URL}/libros/`, { headers });
+  }
+
+  // Método para buscar libros con token (mismo ajuste)
+  buscarLibros(query: string): Observable<Libro[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<Libro[]>(`${API_URL}/libros/?search=${query}`, { headers });
   }
   
-  // 💡 Implementación de Búsqueda (Futuro)
-  buscarLibros(query: string): Observable<Libro[]> {
-    // Django REST Framework usa query params para la búsqueda.
-    // Asumiendo que has configurado `search_fields` en tu ViewSet.
-    return this.http.get<Libro[]>(`${API_BASE_URL}/libros/?search=${query}`);
-  }
+  // Agrega más métodos aquí (crearLibro, actualizarLibro, eliminarLibro)
 }

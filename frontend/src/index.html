@@ -1,13 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>Biblioteca DGAC</title>
+  <title>Mi Biblioteca DGAC</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="book.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Carga de Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 💡 IMPORTANTE: Cargar Chart.js en index.html -->
+  <!-- Esto asegura que la librería esté disponible globalmente antes de que se inicie Angular. -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
 </head>
-<body>
+<body class="bg-gray-100">
+  <!-- El selector principal de tu aplicación Angular -->
   <app-root></app-root>
 </body>
 </html>

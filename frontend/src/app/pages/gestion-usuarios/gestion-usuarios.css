@@ -1,0 +1,15 @@
+/* Estilos adicionales para la tabla (aunque se usa principalmente Tailwind) */
+
+/* Asegura un buen contraste en los botones de acción */
+button.text-indigo-600:hover {
+  text-decoration: underline;
+}
+
+button.text-red-600:hover {
+  text-decoration: underline;
+}
+
+/* Mejora la legibilidad de la tabla en pantallas pequeñas */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}

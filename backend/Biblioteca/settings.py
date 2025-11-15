@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # TERCEROS
-    'corsheaders',  
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # 💡 CRÍTICO: Debe estar lo más arriba posible para procesar los headers CORS
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -78,11 +79,11 @@ WSGI_APPLICATION = 'Biblioteca.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
-        'NAME': 'ms_usuarios_biblioteca',      # DB para Usuarios (default)
-        'USER': 'ms_usuarios_dev',            
-        'PASSWORD': 'usuarios123',            
-        'HOST': '127.0.0.1',                  
-        'PORT': '3306',                       
+        'NAME': 'ms_usuarios_biblioteca',
+        'USER': 'ms_usuarios_dev',
+        'PASSWORD': 'usuarios123',
+        'HOST': '127.0.0.1', 
+        'PORT': '3306', 
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         }
@@ -91,8 +92,8 @@ DATABASES = {
     # 💡 NUEVA BASE DE DATOS PARA EL CATÁLOGO
     'catalogo_db': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ms_catalogo_biblioteca',  # <<< Nombre de la nueva DB
-        'USER': 'ms_usuarios_dev',        # Puedes usar el mismo usuario MySQL
+        'NAME': 'ms_catalogo_biblioteca', 
+        'USER': 'ms_usuarios_dev', 
         'PASSWORD': 'usuarios123',
         'HOST': '127.0.0.1',
         'PORT': '3306',
@@ -153,14 +154,31 @@ REST_FRAMEWORK = {
     ]
 }
 
-# Configuración CORS (NECESARIO PARA ANGULAR)
-# 💡 Usamos la lista de orígenes permitidos (más seguro)
+# ----------------------------------------------------
+# 💡 CONFIGURACIÓN CORS (NECESARIO PARA ANGULAR)
+# ----------------------------------------------------
+
+# Orígenes permitidos (necesario para Angular en 4200)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",  # Origen por defecto de Angular
+    "http://localhost:4200",
     "http://127.0.0.1:4200",
 ]
+
 CORS_ALLOW_CREDENTIALS = True 
-# La opción CORS_ALLOW_ALL_ORIGINS = True fue eliminada para mayor seguridad.
+
+# 💡 CRÍTICO: Permite que el frontend envíe el Token de Autenticación en el Header.
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',  # <-- Esta línea permite enviar el token 'Bearer ...'
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
 DATABASE_ROUTERS = ['Biblioteca.db_routers.MicroserviceRouter']
 
 MEDIA_URL = '/media/'

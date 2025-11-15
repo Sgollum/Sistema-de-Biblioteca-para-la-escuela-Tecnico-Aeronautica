@@ -1,39 +1,90 @@
-<div class="search-bar-container">
-    <input 
-        type="text" 
-        placeholder="Buscar por Título, Autor o ISBN..."
+<!-- Encabezado y búsqueda -->
+<div class="container mx-auto p-4 sm:p-6 lg:p-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-extrabold text-gray-900">Catálogo de Libros</h1>
         
-        [(ngModel)]="searchTerm"
-        
-        (ngModelChange)="onSearch()" 
-        
-        class="form-control"
-    />
-</div>
+        <!-- Botón "Registrar Nuevo Libro" (visible para Bibliotecario/Admin) -->
+        <a *ngIf="currentRole === 'bibliotecario' || currentRole === 'admin'"
+           [routerLink]="['/libro/form']"
+           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+            + Registrar Nuevo Libro
+        </a>
+    </div>
 
-<div *ngIf="isLoading" class="loading-message">
-    Cargando catálogo...
-</div>
+    <!-- Barra de Búsqueda -->
+    <div class="mb-8">
+        <form (ngSubmit)="buscarLibros()" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+            <input type="text" 
+                   [(ngModel)]="searchQuery" 
+                   name="searchQuery"
+                   placeholder="Buscar por Título, Autor o ISBN..."
+                   class="w-full sm:w-3/4 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+            <button type="submit"
+                    class="w-full sm:w-1/4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-300">
+                Buscar
+            </button>
+        </form>
+        <p class="mt-4 text-gray-600">Mostrando **{{ totalLibros }}** libros.</p>
+    </div>
 
-<div *ngIf="error" class="error-message">
-    {{ error }}
-</div>
+    <!-- Lista de Libros -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div *ngFor="let libro of libros" class="bg-white rounded-xl shadow-2xl overflow-hidden hover:shadow-indigo-400 transition duration-300 transform hover:scale-[1.02] border border-gray-200">
+            
+            <!-- Imagen y Fallback -->
+            <div class="h-64 bg-gray-100 flex items-center justify-center">
+                <!-- CORRECCIÓN 1: Cambiamos imagen_uri a imagen_url -->
+                <img [src]="libro.imagen_url || 'https://placehold.co/150x250/cccccc/333333?text=No+Cover'" 
+                     [alt]="'Portada de ' + libro.titulo"
+                     (error)="onImageError($event)"
+                     class="w-full h-full object-cover">
+            </div>
 
-<div *ngIf="libros.length > 0 && !isLoading" class="catalogo-list">
-    <h3>Mostrando {{ libros.length }} de {{ libros.length }} libros</h3>
-    
-    <div *ngFor="let libro of libros" class="book-item">
-        <img [src]="libro.imagen_url" alt="Portada de {{ libro.titulo }}" class="book-cover">
-        
-        <h4>{{ libro.titulo }}</h4>
-        <p>Autor: {{ libro.autor_nombre }}</p>
-        <p>Categoría: {{ libro.categoria_nombre }}</p>
-        <p>ISBN: {{ libro.isbn }}</p>
-        <p>Disponibles: {{ libro.copias_disponibles }}</p>
-        
+            <!-- Detalles del Libro -->
+            <div class="p-5">
+                <h3 class="text-xl font-bold text-gray-900 mb-1">{{ libro.titulo }}</h3>
+                <p class="text-sm text-gray-600">Autor: <span class="font-medium">{{ libro.autor_nombre }}</span></p>
+                <p class="text-sm text-gray-600">Categoría: <span class="font-medium">{{ libro.categoria_nombre }}</span></p>
+                <p class="text-sm text-gray-600 mb-4">ISBN: {{ libro.isbn }}</p>
+
+                <!-- Estado de Disponibilidad y Acciones de Lector -->
+                <div class="mt-4 border-t pt-4">
+                    <p class="font-semibold text-base mb-2">
+                        Disponibles: <span [class]="{'text-green-600': libro.copias_disponibles > 0, 'text-red-600': libro.copias_disponibles === 0}">
+                            {{ libro.copias_disponibles }}
+                        </span>
+                    </p>
+
+                    <!-- Acciones para Lector (Solicitar Préstamo) -->
+                    <button *ngIf="currentRole === 'lector' && libro.copias_disponibles > 0"
+                            class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-300">
+                        Solicitar Préstamo
+                    </button>
+                    <span *ngIf="currentRole === 'lector' && libro.copias_disponibles === 0" 
+                          class="w-full block text-center bg-red-100 text-red-700 font-semibold py-2 rounded-lg border border-red-400">
+                        No Disponible
+                    </span>
+                </div>
+
+
+                <!-- Acciones de Bibliotecario/Admin (Editar/Eliminar) -->
+                <div *ngIf="currentRole === 'bibliotecario' || currentRole === 'admin'" class="mt-4 flex space-x-2">
+                    <button [routerLink]="['/libro/form', libro.id]"
+                            class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-bold py-2 rounded-lg transition duration-300 text-sm">
+                        Editar
+                    </button>
+                    <button (click)="eliminarLibro(libro.id)"
+                            class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg transition duration-300 text-sm">
+                        Eliminar
+                    </button>
+                </div>
+
+            </div>
         </div>
-</div>
-
-<div *ngIf="libros.length === 0 && !isLoading" class="no-results">
-    No se encontraron libros. Intente otra búsqueda.
+    </div>
+    
+    <!-- Mensaje si no hay libros (opcional, si los libros.length es 0) -->
+    <div *ngIf="libros.length === 0" class="mt-10 text-center text-gray-500">
+        <p class="text-lg">No se encontraron libros que coincidan con la búsqueda.</p>
+    </div>
 </div>

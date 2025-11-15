@@ -1,0 +1,55 @@
+:host {
+    font-family: 'Inter', sans-serif;
+    display: block;
+    background-color: #f7f9fb; /* Fondo suave */
+}
+
+/* Estilos para las tarjetas de KPI */
+.rounded-xl {
+    border-radius: 1rem;
+}
+
+.shadow-lg {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Colores de los botones de acción rápida */
+.bg-green-600 {
+    background-color: #059669;
+}
+.hover\:bg-green-700:hover {
+    background-color: #047857;
+}
+
+.bg-yellow-500 {
+    background-color: #f59e0b;
+}
+.hover\:bg-yellow-600:hover {
+    background-color: #d97706;
+}
+
+/* Colores para las tarjetas de préstamos críticos */
+.bg-red-100 {
+    background-color: #fee2e2;
+}
+.border-red-300 {
+    border-color: #fca5a5;
+}
+.text-red-700 {
+    color: #b91c1c;
+}
+
+.bg-yellow-100 {
+    background-color: #fffbeb;
+}
+.border-yellow-300 {
+    border-color: #fcd34d;
+}
+.text-yellow-700 {
+    color: #b45309;
+}
+
+/* Efecto hover en botones de acción */
+.hover\:scale-\[1\.01\]:hover {
+    transform: scale(1.01);
+}

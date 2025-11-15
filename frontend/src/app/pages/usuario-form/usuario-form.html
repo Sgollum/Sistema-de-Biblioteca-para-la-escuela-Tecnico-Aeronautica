@@ -1,0 +1,92 @@
+<!-- 
+  Formulario de Creación/Edición de Usuario 
+-->
+<div class="p-6 md:p-10 bg-gray-50 min-h-screen">
+  
+  <!-- Título Dinámico -->
+  <h1 class="text-3xl font-bold text-gray-800 mb-8">
+    {{ isEditMode ? 'Editar Usuario ID: ' + usuarioId : 'Crear Nuevo Usuario' }}
+  </h1>
+  
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+    <form (ngSubmit)="onSubmit()" #userForm="ngForm">
+      
+      <!-- Sección: Información Personal -->
+      <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Información Personal</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        
+        <!-- Campo Nombre -->
+        <div>
+          <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+          <input type="text" id="nombre" name="nombre" [(ngModel)]="usuario.nombre" required
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+        </div>
+
+        <!-- Campo Apellido -->
+        <div>
+          <label for="apellido" class="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+          <input type="text" id="apellido" name="apellido" [(ngModel)]="usuario.apellido" required
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+        </div>
+      </div>
+
+      <!-- Sección: Acceso y Rol -->
+      <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Acceso y Permisos</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+        <!-- Campo Email (Login) -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email (Usuario)</label>
+          <input type="email" id="email" name="email" [(ngModel)]="usuario.email" required email
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+                 [disabled]="isEditMode"> <!-- No se permite cambiar el email en edición -->
+        </div>
+
+        <!-- Campo Rol -->
+        <div>
+          <label for="rol" class="block text-sm font-medium text-gray-700 mb-1">Rol de Usuario</label>
+          <select id="rol" name="rol" [(ngModel)]="usuario.rol" required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-white transition duration-150">
+            @for (rol of roles; track rol) {
+              <option [value]="rol">{{ rol }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Campo Contraseña (Solo en modo Creación) -->
+        <!-- *ngIf es un módulo del CommonModule, que ya está importado. -->
+        <div *ngIf="!isEditMode">
+          <label for="contrasena" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+          <input type="password" id="contrasena" name="contrasena" [(ngModel)]="usuario.contrasena" 
+                 [required]="!isEditMode"
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+        </div>
+        
+        <!-- Espacio de relleno si estamos en modo edición -->
+        <div *ngIf="isEditMode">
+          <p class="text-sm text-gray-500 mt-2">
+            Nota: La contraseña no se edita directamente aquí por seguridad.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="flex justify-end space-x-4 pt-4 border-t">
+        
+        <!-- Botón Cancelar -->
+        <button type="button" (click)="onCancel()"
+                class="px-6 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition duration-150 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
+          Cancelar
+        </button>
+        
+        <!-- Botón Guardar/Actualizar -->
+        <button type="submit" [disabled]="!userForm.form.valid"
+                class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 disabled:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
+          {{ isEditMode ? 'Actualizar Usuario' : 'Crear Usuario' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

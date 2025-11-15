@@ -1,0 +1,50 @@
+:host {
+    font-family: 'Inter', sans-serif;
+    display: block;
+    background-color: #f7f9fb;
+}
+
+/* Estilos de las tarjetas */
+.rounded-xl {
+    border-radius: 1rem;
+}
+
+.shadow-lg {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Colores para las secciones de seguridad */
+.border-red-500 {
+    border-color: #ef4444;
+}
+.border-green-500 {
+    border-color: #10b981;
+}
+.text-red-600 {
+    color: #dc2626;
+}
+.text-green-600 {
+    color: #059669;
+}
+.text-yellow-600 {
+    color: #d97706;
+}
+
+/* Colores de los botones de acción rápida */
+.bg-indigo-600 {
+    background-color: #4f46e5;
+}
+.hover\:bg-indigo-700:hover {
+    background-color: #4338ca;
+}
+
+/* Colores para el gráfico de roles (para la leyenda) */
+.bg-red-400 {
+    background-color: #f87171;
+}
+.bg-blue-400 {
+    background-color: #60a5fa;
+}
+.bg-teal-400 {
+    background-color: #2dd4bf;
+}

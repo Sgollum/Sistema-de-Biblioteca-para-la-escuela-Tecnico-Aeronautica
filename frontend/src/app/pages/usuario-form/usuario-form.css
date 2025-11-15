@@ -1,0 +1,7 @@
+/* Estilos específicos para el formulario de Usuario. 
+   La mayoría del estilo se maneja con clases de Tailwind. */
+
+/* Asegura que el contenedor del formulario sea adaptable */
+.max-w-4xl {
+  width: 100%;
+}

@@ -1,0 +1,29 @@
+<!-- Estructura básica del layout con navegación y router-outlet -->
+<div class="min-h-screen bg-gray-100">
+    
+    <!-- Aquí iría tu componente de navegación (Navbar/Header) si lo tuvieras, por ahora solo un div simple -->
+    <nav class="bg-indigo-700 p-4 shadow-md flex justify-between items-center text-white">
+        <div class="text-xl font-bold">
+            Mi Biblioteca
+        </div>
+        <div class="space-x-4">
+            <!-- Asumo que aquí tendrías un componente de navegación o enlaces -->
+            <a [routerLink]="['/admin-dashboard']" class="hover:text-indigo-200">Admin</a>
+            <a [routerLink]="['/home']" class="hover:text-indigo-200">Catálogo</a>
+            <button (click)="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md transition duration-150">
+                Cerrar Sesión
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenido principal que cargará el componente de la ruta (AdminDashboard, LectorDashboard, etc.) -->
+    <main class="container mx-auto p-4">
+        <!-- CRÍTICO: Aquí es donde Angular cargará dinámicamente el componente de la ruta activa -->
+        <router-outlet></router-outlet>
+    </main>
+
+    <!-- Pie de página (Opcional) -->
+    <footer class="text-center p-4 text-gray-600 mt-8">
+        © 2025 Mi Biblioteca | Gestión de Administrador
+    </footer>
+</div>

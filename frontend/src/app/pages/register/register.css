@@ -1,0 +1,28 @@
+:host {
+    /* Define la fuente Inter */
+    font-family: 'Inter', sans-serif;
+    /* Fondo muy sutil y limpio */
+    background-color: #f7f9fb;
+}
+
+/* Efecto visual en la tarjeta */
+.shadow-2xl {
+    transition: box-shadow 0.3s ease-in-out;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilo para los campos de formulario enfocados */
+.focus\:border-blue-500:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    border-color: #3b82f6; 
+}
+
+/* Estilo para el botón de registro */
+.bg-green-600 {
+    font-weight: 600;
+}
+.bg-green-600:hover {
+    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.4);
+    transform: translateY(-1px);
+}

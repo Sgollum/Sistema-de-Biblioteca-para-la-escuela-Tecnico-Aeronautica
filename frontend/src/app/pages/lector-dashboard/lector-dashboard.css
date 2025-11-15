@@ -1,0 +1,40 @@
+:host {
+    font-family: 'Inter', sans-serif;
+    background-color: #f7f9fb;
+    display: block;
+}
+
+/* Efectos de sombra y esquinas redondeadas para las tarjetas */
+.rounded-xl {
+    border-radius: 1rem; /* 16px */
+}
+
+.shadow-xl {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+/* Encabezado de bienvenida con un color fuerte */
+.bg-blue-600 {
+    background-color: #2563eb;
+}
+
+/* Estilo para las filas de préstamos vencidos */
+.bg-red-50 {
+    background-color: #fef2f2; /* Fondo muy claro para libros vencidos */
+    border-color: #fca5a5; /* Borde suave */
+}
+
+/* Botón principal de exploración */
+.hover\:scale-105 {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Botón de renovación */
+.bg-indigo-500 {
+    background-color: #6366f1;
+}
+
+.bg-indigo-500:hover {
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.4);
+}
