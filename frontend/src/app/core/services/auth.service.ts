@@ -1,16 +1,13 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs'; 
+import { isPlatformBrowser } from '@angular/common'; // CRÍTICO: Esta importación es necesaria para isPlatformBrowser
+import { AuthToken, LoginCredentials, RegisterCredentials } from '../models/auth.model'; 
 
-// Interfaz para la respuesta de inicio de sesión (asumiendo que Django/DRF devuelve un token)
-interface AuthResponse {
-    access: string; // El token de acceso (JWT)
-    refresh: string; // El token de refresco (si lo usas)
-    user_role: string; // Asumiendo que el backend envía el rol
+// Definición simple de la interfaz de Usuario
+interface UserInfo {
+    rol: string; 
 }
-
-// URL de la API de tu microservicio de usuarios (ajusta si es necesario)
-const AUTH_API_URL = 'http://localhost:8000/api/v1/usuarios';
 
 @Injectable({
     providedIn: 'root'
@@ -18,64 +15,96 @@ const AUTH_API_URL = 'http://localhost:8000/api/v1/usuarios';
 export class AuthService {
     private http = inject(HttpClient);
 
-    // ************************************************************
-    // *** Implementación de Token y Rol (Lo que faltaba) ***
-    // ************************************************************
+    private platformId = inject(PLATFORM_ID); 
 
-    /**
-     * Obtiene el token de acceso JWT del almacenamiento local.
-     * @returns El token de acceso o null si no existe.
-     */
-    getToken(): string | null {
-        // Asume que el token se guarda con la clave 'access_token' tras el login
-        return localStorage.getItem('access_token');
-    }
-
-    /**
-     * Extrae el rol del usuario del token JWT (asumiendo que está codificado o guardado por separado).
-     * NOTA: La decodificación real del JWT es compleja. Para simplificar, asumiremos
-     * que el rol fue guardado directamente o es extraído de un token simple.
-     * Si el token es un JWT real, se usaría una librería como 'jwt-decode'.
-     *
-     * Por ahora, lo recuperamos si fue guardado al iniciar sesión.
-     * @returns El rol del usuario ('Lector', 'Bibliotecario', 'Administrador') o null.
-     */
-    getCurrentUserRole(): string | null {
-        // En una app real, el rol se decodificaría del JWT.
-        // Aquí, buscaremos el rol guardado en localStorage.
-        return localStorage.getItem('user_role');
-    }
-
-    // ************************************************************
-    // *** Lógica de Inicio de Sesión (Ejemplo) ***
-    // ************************************************************
+    private isBrowser = isPlatformBrowser(this.platformId); 
     
-    login(username: string, password: string): Observable<AuthResponse> {
-        // Endpoint que genera el token (puede ser /api/token/ o /api/login/)
-        return this.http.post<AuthResponse>(`${AUTH_API_URL}/token/`, { 
-            username, 
-            password 
-        });
+private readonly tokenKey = 'authToken';
+    private readonly roleKey = 'userRole'; 
+    
+    // URL base del API. (Asegúrate que esta URL sea correcta)
+    private apiUrlBase = 'http://localhost:8000'; 
+    
+    public readonly Roles = {
+        ADMIN: 'admin',
+        BIBLIOTECARIO: 'biblio', 
+        LECTOR: 'lector',
+        GUEST: 'guest'
+    };
+
+    constructor() { 
+        if (this.isBrowser) {
+            if (this.isLoggedIn() && !this.getCurrentUserRole()) {
+                this.fetchUserInfo().subscribe({
+                    error: (err) => console.error('Error al recargar info de usuario al inicio:', err)
+                });
+            }
+        }
     }
 
-    /**
-     * Guarda el token de acceso y el rol del usuario tras un login exitoso.
-     */
-    saveAuthData(response: AuthResponse): void {
-        localStorage.setItem('access_token', response.access);
-        // Si el backend no devuelve el 'user_role', necesitarás decodificar el JWT aquí.
-        // Asumiendo que sí lo devuelve para la simplicidad.
-        // Si el backend no devuelve 'user_role', esta línea debe cambiarse
-        // para decodificarlo del token 'response.access'.
-        localStorage.setItem('user_role', response.user_role); 
+    // ... (El resto de los métodos login, fetchUserInfo, registerUser, etc., son correctos)
+
+    login(credentials: LoginCredentials): Observable<AuthToken> {
+        const url = `${this.apiUrlBase}/api/login/`;
+        return this.http.post<AuthToken>(url, credentials).pipe(
+            tap(response => {
+                this.saveToken(response.token);
+                this.fetchUserInfo().subscribe({
+                    error: (err) => console.error('Error al obtener info de usuario después del login:', err)
+                });
+            })
+        );
     }
 
-    /**
-     * Cierra la sesión y limpia el almacenamiento local.
-     */
+    fetchUserInfo(): Observable<UserInfo> {
+        const url = `${this.apiUrlBase}/api/usuarios/me/`; 
+        return this.http.get<UserInfo>(url).pipe(
+            tap(userInfo => {
+                this.saveUserRole(userInfo.rol); 
+                console.log('Rol de usuario guardado:', userInfo.rol);
+            })
+        );
+    }
+
+    registerUser(credentials: RegisterCredentials): Observable<any> {
+        const url = `${this.apiUrlBase}/api/usuarios/`;
+        return this.http.post<any>(url, credentials);
+    }
+
+    saveToken(token: string): void {
+        if (this.isBrowser) { 
+            localStorage.setItem(this.tokenKey, token);
+        }
+    }
+
+    saveUserRole(role: string): void {
+        if (this.isBrowser) { 
+            localStorage.setItem(this.roleKey, role);
+        }
+    }
+
+    getToken(): string | null {
+        if (this.isBrowser) { 
+            return localStorage.getItem(this.tokenKey);
+        }
+        return null;
+    }
+
+    isLoggedIn(): boolean {
+        return !!this.getToken();
+    }
+
+    getCurrentUserRole(): string {
+        if (this.isBrowser) { 
+            return localStorage.getItem(this.roleKey) || this.Roles.GUEST;
+        }
+        return this.Roles.GUEST;
+    }
+    
     logout(): void {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user_role');
-        // Opcional: navegar a la página de login/home
+        if (this.isBrowser) { 
+            localStorage.removeItem(this.tokenKey);
+            localStorage.removeItem(this.roleKey);
+        }
     }
 }

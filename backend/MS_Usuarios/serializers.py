@@ -1,45 +1,87 @@
-# backend/MS_Usuarios/serializers.py
-
 from rest_framework import serializers
-from .models import Usuario
+from django.contrib.auth.models import Group 
+from .models import Usuario, RolUsuario 
+from django.db import IntegrityError 
 
-# Serializador para el modelo Usuario
-class UsuarioSerializer(serializers.ModelSerializer):
-    # Campos adicionales solo de lectura (opcional, pero útil)
-    rol_display = serializers.CharField(source='get_rol_display', read_only=True)
+# 🌟 SERIALIZER PARA DEVOLVER LA INFORMACIÓN DEL USUARIO LOGUEADO (/api/usuarios/me/)
+class UserSerializer(serializers.ModelSerializer):
+    # Campo calculado para devolver el rol en el formato que Angular espera (minúsculas)
+    rol = serializers.SerializerMethodField()
 
     class Meta:
         model = Usuario
-        # Incluye todos los campos excepto la contraseña para lectura
-        fields = (
-            'id', 'username', 'first_name', 'last_name', 'email', 
-            'is_active', 'rol', 'rol_display', 'is_staff', 'is_superuser'
-        )
-        read_only_fields = ('is_active', 'is_staff', 'is_superuser', 'rol_display')
+        # Incluimos 'nombre' y los campos de identificación
+        fields = ('id', 'email', 'nombre', 'rol') 
+        read_only_fields = ('id', 'email', 'nombre', 'rol')
 
-# Serializador para la creación/actualización que permite manejar la contraseña
-class UsuarioCreateUpdateSerializer(UsuarioSerializer):
-    # Hacemos que la contraseña sea campo de escritura
-    password = serializers.CharField(write_only=True, required=False)
+    def get_rol(self, obj):
+        # *** LÓGICA DE DETERMINACIÓN DE ROL ***
+        
+        # 1. Chequeo de Administrador (Máxima prioridad)
+        if obj.is_superuser:
+            return 'admin' 
+        
+        # 2. Chequeo de Grupo Específico (Bibliotecario)
+        # Si pertenece al grupo 'bibliotecario', devolvemos 'biblio' para Angular.
+        if obj.groups.filter(name='bibliotecario').exists():
+            return 'biblio' 
+        
+        # 3. Chequeo de Grupo Específico (Lector)
+        if obj.groups.filter(name='lector').exists():
+            return 'lector'
+        
+        # 4. Fallback: Si no tiene un grupo, usamos el valor del campo 'rol' (BIBLIO/LECTOR) del modelo en minúsculas.
+        return obj.rol.lower() 
 
-    class Meta(UsuarioSerializer.Meta):
-        # Aseguramos que 'password' esté incluido en los campos
-        fields = UsuarioSerializer.Meta.fields + ('password',)
+# 🌟 SERIALIZER PARA EL REGISTRO (SIN CAMBIOS RESPECTO AL ANTERIOR)
+class RegisterSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+
+    class Meta:
+        model = Usuario
+        fields = ('email', 'nombre', 'username', 'password', 'password2') 
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'username': {'required': True, 'allow_blank': False} 
+        }
+
+    def validate(self, data):
+        password = data.get('password')
+        password2 = data.pop('password2') 
+        
+        if password != password2:
+            raise serializers.ValidationError({"password": "Las contraseñas no coinciden."})
+            
+        return data
 
     def create(self, validated_data):
-        # Lógica para crear el usuario con la contraseña hasheada
-        password = validated_data.pop('password', None)
-        user = Usuario.objects.create(**validated_data)
-        if password is not None:
-            user.set_password(password)
-            user.save()
-        return user
+        try:
+            password = validated_data.pop('password')
+            username = validated_data.pop('username')
+            email = validated_data.pop('email')
+            nombre = validated_data.pop('nombre')
 
-    def update(self, instance, validated_data):
-        # Lógica para actualizar el usuario y manejar la contraseña si se proporciona
-        password = validated_data.pop('password', None)
-        user = super().update(instance, validated_data)
-        if password is not None:
-            user.set_password(password)
+            user = Usuario.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                nombre=nombre,
+                rol=RolUsuario.LECTOR # Asignamos LECTOR por defecto
+            )
+            
+            lector_group = Group.objects.get(name='lector')
+            user.groups.add(lector_group)
+
             user.save()
-        return user
+            return user
+        
+        except IntegrityError:
+            raise serializers.ValidationError({
+                "detail": "El nombre de usuario o correo ya están en uso."
+            })
+        except Group.DoesNotExist:
+            raise serializers.ValidationError({
+                "detail": "Advertencia interna: El grupo 'lector' no existe en Django. Por favor, créelo."
+            })
+        except Exception as e:
+             raise serializers.ValidationError({"detail": f"Error desconocido en la creación de usuario: {e}"})

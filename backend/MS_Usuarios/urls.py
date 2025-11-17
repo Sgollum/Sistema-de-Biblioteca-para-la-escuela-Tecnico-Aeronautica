@@ -1,17 +1,15 @@
-# backend/MS_Usuarios/urls.py
+# RUTA COMENTADA: backend/MS_Usuarios/urls.py
+from django.urls import path
+from rest_framework.authtoken import views
+# Asegúrate de importar AMBAS vistas ahora
+from .views import RegisterUserView, UserProfileView 
 
-from django.urls import path, include 
-from rest_framework.routers import DefaultRouter
-from .views import UsuarioViewSet
-
-# 1. Configurar el Router
-router = DefaultRouter()
-# Registra el ViewSet. 'usuarios' aquí sería el prefijo si no usáramos la ruta raíz.
-# Usamos r'' (raíz) para que las rutas sean directamente /api/usuarios/
-router.register(r'', UsuarioViewSet, basename='usuarios') 
-
-# 2. Definir la lista de patrones de URL (¡CRUCIAL!)
 urlpatterns = [
-    # Incluir todas las rutas generadas por el router (GET, POST, etc. para /api/usuarios/)
-    path('', include(router.urls)),
+
+path('login/', views.obtain_auth_token, name='api_token_auth'), 
+
+ # URL para el registro de nuevos usuarios
+path('register/', RegisterUserView.as_view(), name='user_register'),
+
+path('me/', UserProfileView.as_view(), name='user_profile'), 
 ]

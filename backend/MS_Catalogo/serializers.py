@@ -25,7 +25,7 @@ class LibroSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'titulo', 'autor', 'autor_nombre', 'categoria', 
             'categoria_nombre', 'isbn', 'fecha_publicacion', 
-            'estado', 'copias_totales', 'copias_disponibles'
+            'estado', 'copias_totales', 'copias_disponibles','imagen_url',
         ]
         
     def get_autor_nombre(self, obj):

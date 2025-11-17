@@ -1,4 +1,3 @@
-# backend/MS_Usuarios/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -10,6 +9,16 @@ class RolUsuario(models.TextChoices):
 
 # Modelo Usuario que hereda de AbstractUser
 class Usuario(AbstractUser):
+    # CRÍTICO: Añadimos el campo 'nombre' que el Serializer espera.
+    nombre = models.CharField(max_length=150, verbose_name='Nombre completo', blank=False, null=False) 
+    
+    # Hacemos los campos heredados opcionales para evitar problemas en el Admin
+    first_name = models.CharField(max_length=150, blank=True, null=True, verbose_name=('first name'))
+    last_name = models.CharField(max_length=150, blank=True, null=True, verbose_name=('last name'))
+    
+    # Email requerido y único
+    email = models.EmailField(unique=True, null=False, blank=False) 
+    
     rol = models.CharField(
         max_length=10,
         choices=RolUsuario.choices,

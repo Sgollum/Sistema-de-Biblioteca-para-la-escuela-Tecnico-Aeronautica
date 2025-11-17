@@ -9,6 +9,8 @@
         <div class="space-x-4">
             <!-- Asumo que aquí tendrías un componente de navegación o enlaces -->
             <a [routerLink]="['/admin-dashboard']" class="hover:text-indigo-200">Admin</a>
+            <a [routerLink]="['/bibliotecario-dashboard']" class="hover:text-indigo-200">biblio</a>
+            <a [routerLink]="['/lector-dashboard']" class="hover:text-indigo-200">lector</a>
             <a [routerLink]="['/home']" class="hover:text-indigo-200">Catálogo</a>
             <button (click)="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md transition duration-150">
                 Cerrar Sesión

@@ -4,10 +4,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(100deg, #1a73e8, #72e358, #ff9100);
-  background-size: 200% 200%;
-  animation: gradientMove 8s ease infinite;
+
+  /* Imagen de fondo + overlay */
+  background: 
+      linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+      url('https://wallpapers.com/images/hd/library-background-bdpbrit7uip76ztq.jpg');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* Efecto desenfoque elegante */
+  backdrop-filter: blur(3px);
 }
+
 
 /* Tarjeta del formulario */
 .login-card {

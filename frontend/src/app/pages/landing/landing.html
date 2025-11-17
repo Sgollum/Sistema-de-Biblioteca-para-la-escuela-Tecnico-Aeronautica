@@ -1,33 +1,47 @@
 <div class="landing-container">
-    <header>
-        <h1>Bienvenido a Mi Biblioteca Digital DGAC</h1>
-        <p>hola profe como esta?</p>
+    <!-- HERO -->
+    <header class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Mi Biblioteca Digital DGAC</h1>
+            <p>Accede a nuestra colección y gestiona tus recursos con facilidad.</p>
+            <button class="hero-btn" (click)="goToLogin()">Ingresar al Sistema</button>
+        </div>
     </header>
 
+    <!-- SERVICIOS -->
     <section class="info-section">
         <h2>Nuestros Servicios</h2>
+
         <div class="service-cards">
             <div class="card">
+                <div class="icon">📚</div>
                 <h3>Explora Libros</h3>
-                <p>Descubre nuestra vasta colección de títulos.</p>
+                <p>Consulta nuestro catálogo actualizado de títulos disponibles.</p>
             </div>
+
             <div class="card">
+                <div class="icon">🔄</div>
                 <h3>Gestiona Préstamos</h3>
-                <p>Mantén un registro de tus libros prestados.</p>
+                <p>Control total de préstamos, renovaciones y devoluciones.</p>
             </div>
+
             <div class="card">
+                <div class="icon">👤</div>
                 <h3>Administra Usuarios</h3>
-                <p>Control total sobre los usuarios del sistema.</p>
+                <p>Supervisa los usuarios del sistema y gestiona sus accesos.</p>
             </div>
         </div>
     </section>
 
-    <div class="call-to-action">
+    <!-- CTA FINAL -->
+    <section class="call-to-action">
         <p>¿Listo para comenzar?</p>
         <button (click)="goToLogin()">Iniciar Sesión</button>
-    </div>
+    </section>
 
+    <!-- FOOTER -->
     <footer>
-        <p>&copy; 2025 Mi Biblioteca DGAC. Todos los derechos reservados.</p>
+        <p>&copy; 2025 Dirección General de Aeronáutica Civil — Biblioteca DGAC</p>
     </footer>
 </div>
