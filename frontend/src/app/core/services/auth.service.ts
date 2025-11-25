@@ -1,110 +1,121 @@
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs'; 
-import { isPlatformBrowser } from '@angular/common'; // CRÍTICO: Esta importación es necesaria para isPlatformBrowser
+import { Observable, tap } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+// Asumimos que LoginCredentials tiene campos como: { identifier: string; password: string; }
 import { AuthToken, LoginCredentials, RegisterCredentials } from '../models/auth.model'; 
 
-// Definición simple de la interfaz de Usuario
 interface UserInfo {
-    rol: string; 
+  rol: string;
 }
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthService {
-    private http = inject(HttpClient);
+  private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
 
-    private platformId = inject(PLATFORM_ID); 
+  private readonly tokenKey = 'authToken';
+  private readonly roleKey = 'userRole';
 
-    private isBrowser = isPlatformBrowser(this.platformId); 
+  private apiUrlBase = 'http://localhost:8000';
+
+  public readonly Roles = {
+    ADMIN: 'admin',
+    BIBLIOTECARIO: 'bibliotecario',
+    LECTOR: 'lector',
+    GUEST: 'guest'
+  };
+
+  constructor() {
+    if (this.isBrowser) {
+      if (this.isLoggedIn() && !this.getCurrentUserRole()) {
+        this.fetchUserInfo().subscribe();
+      }
+    }
+  }
+
+  // LOGIN
+  login(credentials: LoginCredentials): Observable<AuthToken> {
+    // 🚨 CAMBIO CRÍTICO: La URL ahora apunta a la vista personalizada
+    const url = `${this.apiUrlBase}/api/usuarios/login/`; 
     
-private readonly tokenKey = 'authToken';
-    private readonly roleKey = 'userRole'; 
-    
-    // URL base del API. (Asegúrate que esta URL sea correcta)
-    private apiUrlBase = 'http://localhost:8000'; 
-    
-    public readonly Roles = {
-        ADMIN: 'admin',
-        BIBLIOTECARIO: 'biblio', 
-        LECTOR: 'lector',
-        GUEST: 'guest'
+    // El payload ya estaba correcto:
+    const djangoPayload = {
+      identifier: credentials.identifier, 
+      password: credentials.password 
     };
 
-    constructor() { 
-        if (this.isBrowser) {
-            if (this.isLoggedIn() && !this.getCurrentUserRole()) {
-                this.fetchUserInfo().subscribe({
-                    error: (err) => console.error('Error al recargar info de usuario al inicio:', err)
-                });
-            }
+    return this.http.post<AuthToken>(url, djangoPayload).pipe(
+      tap(response => {
+        this.saveToken(response.token);
+        // Si la respuesta incluye el rol (como en tu LoginView), podemos usarlo directamente:
+        if ('rol' in (response as any)) {
+            this.saveUserRole((response as any).rol);
+        } else {
+             // Si no, volvemos a obtener la info (mejor dejar solo este)
+             this.fetchUserInfo().subscribe();
         }
-    }
+      })
+    );
+  }
 
-    // ... (El resto de los métodos login, fetchUserInfo, registerUser, etc., son correctos)
+  // INFO DEL USUARIO
+  fetchUserInfo(): Observable<UserInfo> {
+    const url = `${this.apiUrlBase}/api/usuarios/me/`;
+    return this.http.get<UserInfo>(url).pipe(
+      tap(userInfo => {
+        this.saveUserRole(userInfo.rol);
+      })
+    );
+  }
 
-    login(credentials: LoginCredentials): Observable<AuthToken> {
-        const url = `${this.apiUrlBase}/api/login/`;
-        return this.http.post<AuthToken>(url, credentials).pipe(
-            tap(response => {
-                this.saveToken(response.token);
-                this.fetchUserInfo().subscribe({
-                    error: (err) => console.error('Error al obtener info de usuario después del login:', err)
-                });
-            })
-        );
-    }
+  // REGISTRO
+  registerUser(credentials: RegisterCredentials): Observable<any> {
+    const url = `${this.apiUrlBase}/api/usuarios/register/`;
+    return this.http.post<any>(url, credentials);
+  }
 
-    fetchUserInfo(): Observable<UserInfo> {
-        const url = `${this.apiUrlBase}/api/usuarios/me/`; 
-        return this.http.get<UserInfo>(url).pipe(
-            tap(userInfo => {
-                this.saveUserRole(userInfo.rol); 
-                console.log('Rol de usuario guardado:', userInfo.rol);
-            })
-        );
+  saveToken(token: string): void {
+    if (this.isBrowser) {
+      localStorage.setItem(this.tokenKey, token);
     }
+  }
 
-    registerUser(credentials: RegisterCredentials): Observable<any> {
-        const url = `${this.apiUrlBase}/api/usuarios/`;
-        return this.http.post<any>(url, credentials);
+  saveUserRole(rol: string): void {
+    if (this.isBrowser) {
+      localStorage.setItem(this.roleKey, rol);
     }
+  }
 
-    saveToken(token: string): void {
-        if (this.isBrowser) { 
-            localStorage.setItem(this.tokenKey, token);
-        }
+  getToken(): string | null {
+    if (this.isBrowser) {
+      return localStorage.getItem(this.tokenKey);
     }
+    return null;
+  }
 
-    saveUserRole(role: string): void {
-        if (this.isBrowser) { 
-            localStorage.setItem(this.roleKey, role);
-        }
-    }
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
 
-    getToken(): string | null {
-        if (this.isBrowser) { 
-            return localStorage.getItem(this.tokenKey);
-        }
-        return null;
+  // 💡 CORRECCIÓN DE TIPO: Asumo que UserRole es un tipo que definiste.
+  // Si no definiste UserRole, reemplaza ': UserRole' por ': string'.
+  getCurrentUserRole(): string {
+    if (this.isBrowser) {
+      const role = localStorage.getItem(this.roleKey) as string; 
+      // Si el rol es nulo, devuelve GUEST
+      return role ?? this.Roles.GUEST; 
     }
+    return this.Roles.GUEST;
+  }
 
-    isLoggedIn(): boolean {
-        return !!this.getToken();
+  logout(): void {
+    if (this.isBrowser) {
+      localStorage.removeItem(this.tokenKey);
+      localStorage.removeItem(this.roleKey);
     }
-
-    getCurrentUserRole(): string {
-        if (this.isBrowser) { 
-            return localStorage.getItem(this.roleKey) || this.Roles.GUEST;
-        }
-        return this.Roles.GUEST;
-    }
-    
-    logout(): void {
-        if (this.isBrowser) { 
-            localStorage.removeItem(this.tokenKey);
-            localStorage.removeItem(this.roleKey);
-        }
-    }
+  }
 }

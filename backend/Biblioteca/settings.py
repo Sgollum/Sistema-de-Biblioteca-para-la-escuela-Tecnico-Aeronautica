@@ -1,12 +1,12 @@
-"""
-Django settings for Biblioteca project.
-"""
+# Django settings for Biblioteca project.
+
 import os
 from pathlib import Path
+# Se añade import para la configuración de la base de datos
+from decouple import config 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 
@@ -15,7 +15,6 @@ SECRET_KEY = 'django-insecure-u%$xr^pgt-gli*1qepkbfj3&^+4m&t9oxj=m(+-55qu&u5438x
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # biblioteca/settings.py (cerca de la línea 40)
 
@@ -40,7 +39,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # 💡 CRÍTICO: Debe estar lo más arriba posible para procesar los headers CORS
+    # CRÍTICO: Debe estar lo más arriba posible para procesar los headers CORS
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -89,7 +88,7 @@ DATABASES = {
         }
     },
     
-    # 💡 NUEVA BASE DE DATOS PARA EL CATÁLOGO
+    # NUEVA BASE DE DATOS PARA EL CATÁLOGO
     'catalogo_db': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ms_catalogo_biblioteca', 
@@ -139,12 +138,23 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# --- CONFIGURACIONES ADICIONALES (DRF y CORS) ---
+# --- CONFIGURACIONES DE AUTENTICACIÓN PERSONALIZADA ---
 
 # Configuración de Usuario Personalizado
 AUTH_USER_MODEL = 'MS_Usuarios.Usuario'
 
-# 💡 CONFIGURACIÓN CLAVE para resolver el error 500 del Token
+# 🚨 CRÍTICO: Definimos los backends para la autenticación
+AUTHENTICATION_BACKENDS = [
+    # 1. Nuestro backend para login con email O username
+    'MS_Usuarios.backends.UsernameOrEmailBackend', 
+    
+    # 2. El backend por defecto de Django
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# --- CONFIGURACIONES ADICIONALES (DRF y CORS) ---
+
+# CONFIGURACIÓN CLAVE para usar TokenAuthentication
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -155,7 +165,7 @@ REST_FRAMEWORK = {
 }
 
 # ----------------------------------------------------
-# 💡 CONFIGURACIÓN CORS (NECESARIO PARA ANGULAR)
+# CONFIGURACIÓN CORS (NECESARIO PARA ANGULAR)
 # ----------------------------------------------------
 
 # Orígenes permitidos (necesario para Angular en 4200)
@@ -166,11 +176,11 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True 
 
-# 💡 CRÍTICO: Permite que el frontend envíe el Token de Autenticación en el Header.
+# CRÍTICO: Permite que el frontend envíe el Token de Autenticación en el Header.
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
-    'authorization',  # <-- Esta línea permite enviar el token 'Bearer ...'
+    'authorization',
     'content-type',
     'dnt',
     'origin',

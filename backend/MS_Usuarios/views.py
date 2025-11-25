@@ -1,31 +1,63 @@
-# RUTA COMENTADA: backend/MS_Usuarios/views.py
-from rest_framework import generics, permissions
-# Importamos AMBOS serializers
-from .serializers import RegisterSerializer, UserSerializer 
-from .models import Usuario 
+# backend/MS_Usuarios/views.py
+from rest_framework import generics, permissions, viewsets
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.contrib.auth import authenticate 
+from django.contrib.auth import get_user_model
 
-# 🌟 NUEVA CLASE PARA OBTENER EL PERFIL DEL USUARIO LOGUEADO (/api/usuarios/me/)
-class UserProfileView(generics.RetrieveAPIView):
-    """
-    Vista que devuelve la información del usuario actualmente autenticado (incluyendo el rol).
-    Requiere autenticación (IsAuthenticated).
-    """
+from .serializers import RegisterSerializer, UserSerializer
+
+Usuario = get_user_model()
+
+
+class UsuarioViewSet(viewsets.ModelViewSet):
+    queryset = Usuario.objects.all().order_by('id')
     serializer_class = UserSerializer
-    # Solo los usuarios autenticados pueden acceder
-    permission_classes = (permissions.IsAuthenticated,) 
+    permission_classes = [permissions.IsAdminUser]
 
-    # Sobreescribimos el método para devolver el usuario que está haciendo la petición
+
+class UserProfileView(generics.RetrieveAPIView):
+    queryset = Usuario.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
     def get_object(self):
-        # self.request.user contiene el objeto Usuario autenticado por Token
         return self.request.user
 
-# 🌟 CLASE PARA EL REGISTRO (EXISTENTE)
+
 class RegisterUserView(generics.CreateAPIView):
-    """
-    Vista que maneja la creación de nuevos usuarios.
-    """
     queryset = Usuario.objects.all()
     serializer_class = RegisterSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [permissions.AllowAny]
 
 
+class LoginView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        identifier = request.data.get("identifier")
+        password = request.data.get("password")
+
+        if not identifier or not password:
+            return Response({"error": "Faltan el identificador o la contraseña."}, status=400)
+
+        # 🚨 CORRECCIÓN CLAVE: Pasamos el 'identifier' como 'username' a authenticate.
+        # Esto permite que el backend personalizado lo busque por email o username.
+        user = authenticate(request=request, username=identifier, password=password) 
+
+        if user is None:
+            # Si falla, devolvemos el 401 Unauthorized
+            return Response({"error": "Credenciales inválidas. Verifica tu usuario/correo y contraseña."}, status=401)
+        
+        if not user.is_active:
+            return Response({"error": "Cuenta de usuario inactiva."}, status=401)
+
+        # Obtener o crear el token de autenticación
+        token, _ = Token.objects.get_or_create(user=user)
+
+        # Retornamos el token y el rol
+        return Response({
+            "token": token.key,
+            "rol": user.rol 
+        }, status=200)

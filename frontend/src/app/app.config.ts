@@ -6,7 +6,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 
 // 💡 RUTA CORRECTA: Importando el interceptor desde la subcarpeta core/interceptors
-import { authTokenInterceptor } from './core/interceptors/auth-token-interceptor';
+import { AuthInterceptor } from './core/interceptors/auth-token-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     // 💡 REGISTRAR HTTP CLIENTE Y EL INTERCEPTOR
     provideHttpClient(
       withInterceptors([
-        authTokenInterceptor // Registrar el interceptor aquí
+        AuthInterceptor // Registrar el interceptor aquí
       ])
     )
   ]

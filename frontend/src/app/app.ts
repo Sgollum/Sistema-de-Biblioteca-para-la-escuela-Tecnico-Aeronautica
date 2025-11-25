@@ -10,8 +10,8 @@ import { HomeComponent } from './pages/home/home';
 import { LibroForm } from './pages/libro-form/libro-form';
 import { Layout } from './shared/layout/layout';
 import { LectorDashboardComponent } from './pages/lector-dashboard/lector-dashboard';
-import { BibliotecarioDashboard } from './pages/bibliotecario-dashboard/bibliotecario-dashboard';
-import { AdminDashboard } from './pages/admin-dashboard/admin-dashboard';
+import { BibliotecarioDashboardComponent } from './pages/bibliotecario-dashboard/bibliotecario-dashboard';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard';
 import { GestionUsuariosComponent } from './pages/gestion-usuarios/gestion-usuarios'; 
 import { UsuarioFormComponent } from './pages/usuario-form/usuario-form'; 
 
@@ -30,8 +30,8 @@ import { UsuarioFormComponent } from './pages/usuario-form/usuario-form';
     LibroForm,
     Layout, 
     LectorDashboardComponent,
-    BibliotecarioDashboard,
-    AdminDashboard,
+    BibliotecarioDashboardComponent,
+    AdminDashboardComponent,
     GestionUsuariosComponent, 
     UsuarioFormComponent,     
   ],

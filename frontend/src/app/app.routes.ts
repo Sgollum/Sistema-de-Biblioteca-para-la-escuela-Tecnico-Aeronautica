@@ -5,8 +5,8 @@ import { HomeComponent } from './pages/home/home';
 import { RegisterComponent } from './pages/register/register'; 
 import { LibroForm } from './pages/libro-form/libro-form'; 
 // Importaciones de Dashboards
-import { AdminDashboard } from './pages/admin-dashboard/admin-dashboard';
-import { BibliotecarioDashboard } from './pages/bibliotecario-dashboard/bibliotecario-dashboard';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard';
+import { BibliotecarioDashboardComponent } from './pages/bibliotecario-dashboard/bibliotecario-dashboard';
 import { LectorDashboardComponent } from './pages/lector-dashboard/lector-dashboard';
 // Importaciones de Gestión de Usuarios
 import { Layout } from './shared/layout/layout';
@@ -63,7 +63,7 @@ export const routes: Routes = [
             // Dashboard Administrador (TU RUTA CONFLICTIVA)
             {
                 path: 'admin-dashboard', 
-                component: AdminDashboard,
+                component: AdminDashboardComponent,
                 title: 'Panel de Administrador'
             },
             
@@ -87,7 +87,7 @@ export const routes: Routes = [
             // Dashboard Bibliotecario
             {
                 path: 'bibliotecario-dashboard', 
-                component: BibliotecarioDashboard,
+                component: BibliotecarioDashboardComponent,
                 title: 'Panel de Bibliotecario'
             },
             

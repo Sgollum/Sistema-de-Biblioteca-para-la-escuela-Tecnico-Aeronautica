@@ -1,34 +1,45 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
-# Definimos las opciones de roles
-class RolUsuario(models.TextChoices):
-    ADMINISTRADOR = 'ADMIN', 'Administrador'
-    BIBLIOTECARIO = 'BIBLIO', 'Bibliotecario'
-    LECTOR = 'LECTOR', 'Lector'
+# Definir las opciones de rol
+ROLE_CHOICES = (
+    ('admin', 'Administrador'),
+    ('bibliotecario', 'Bibliotecario'),
+    ('lector', 'Lector'),
+)
 
-# Modelo Usuario que hereda de AbstractUser
 class Usuario(AbstractUser):
-    # CRÍTICO: Añadimos el campo 'nombre' que el Serializer espera.
-    nombre = models.CharField(max_length=150, verbose_name='Nombre completo', blank=False, null=False) 
-    
-    # Hacemos los campos heredados opcionales para evitar problemas en el Admin
-    first_name = models.CharField(max_length=150, blank=True, null=True, verbose_name=('first name'))
-    last_name = models.CharField(max_length=150, blank=True, null=True, verbose_name=('last name'))
-    
-    # Email requerido y único
-    email = models.EmailField(unique=True, null=False, blank=False) 
-    
+    # Hereda username, email, password, etc., de AbstractUser
+
+    # ✅ CORRECCIÓN CRÍTICA: Aumentar max_length a 50 para que quepan todos los roles
+    # y los roles futuros, eliminando el DataError 1406.
     rol = models.CharField(
-        max_length=10,
-        choices=RolUsuario.choices,
-        default=RolUsuario.LECTOR,
-        verbose_name='Rol del Usuario'
+        max_length=50, 
+        choices=ROLE_CHOICES, 
+        default='lector'
     )
     
-    class Meta:
-        verbose_name = 'Usuario del Sistema'
-        verbose_name_plural = 'Usuarios del Sistema'
+    # Asegúrate de agregar los campos de AbstractUser que quieras mantener
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='usuario_set',
+        blank=True,
+        help_text=('The groups this user belongs to. A user will get all permissions '
+                   'granted to each of their groups.'),
+        verbose_name=('groups'),
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='usuario_set',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        verbose_name=('user permissions'),
+    )
 
+    class Meta:
+        verbose_name = "Usuario"
+        verbose_name_plural = "Usuarios"
+
+    # Puedes necesitar redefinir la representación de string si es un campo custom
     def __str__(self):
-        return f"{self.username} ({self.get_rol_display()})"
+        return self.username

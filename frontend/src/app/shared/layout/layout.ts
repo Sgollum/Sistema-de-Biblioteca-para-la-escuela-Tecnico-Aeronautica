@@ -1,28 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+// RUTA DEL ARCHIVO: frontend/src/app/shared/layout/layout.ts
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// CRÍTICO: Importar RouterOutlet y RouterLink
-import { RouterOutlet, RouterLink, Router } from '@angular/router'; 
+import { RouterModule, Router } from '@angular/router'; // Importamos RouterModule para routerLink
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  // CRÍTICO: Añadir RouterOutlet y RouterLink
-  imports: [CommonModule, RouterOutlet, RouterLink], 
+  imports: [CommonModule, RouterModule], // Importamos CommonModule y RouterModule
   templateUrl: './layout.html',
   styleUrls: ['./layout.css']
 })
-export class Layout implements OnInit {
+export class Layout {
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(private router: Router) { } // Inyectamos Router
-
-  ngOnInit(): void {
-    // Aquí puedes inicializar la navegación, comprobar el estado de la sesión, etc.
+  // Propiedad para obtener el rol actual fácilmente en el HTML
+  get role(): string {
+    return this.authService.getCurrentUserRole();
   }
 
-  logout(): void {
-    // Lógica para cerrar sesión (ej. limpiar token, llamar a AuthService)
-    console.log('Cerrando sesión...');
-    // Redirigir a la página de inicio o login
-    this.router.navigate(['/login']); 
+  // Métodos auxiliares para verificar permisos en el HTML
+  get isAdmin(): boolean {
+    return this.role === 'admin';
+  }
+
+  get isBibliotecario(): boolean {
+    // Aceptamos 'bibliotecario' (estándar) o 'biblio' (por si acaso quedó antiguo en la DB)
+    return this.role === 'bibliotecario' || this.role === 'biblio';
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

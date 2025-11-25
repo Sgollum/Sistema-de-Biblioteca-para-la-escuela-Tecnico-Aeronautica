@@ -1,15 +1,25 @@
-# RUTA COMENTADA: backend/MS_Usuarios/urls.py
-from django.urls import path
-from rest_framework.authtoken import views
-# Asegúrate de importar AMBAS vistas ahora
-from .views import RegisterUserView, UserProfileView 
+# RUTA: backend/MS_Usuarios/urls.py
+
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+from .views import (
+    RegisterUserView,
+    UserProfileView,
+    UsuarioViewSet,
+    LoginView
+)
+
+router = DefaultRouter()
+# La ruta base para el CRUD de usuarios es /api/usuarios/
+router.register(r'', UsuarioViewSet, basename='usuario')
 
 urlpatterns = [
-
-path('login/', views.obtain_auth_token, name='api_token_auth'), 
-
- # URL para el registro de nuevos usuarios
-path('register/', RegisterUserView.as_view(), name='user_register'),
-
-path('me/', UserProfileView.as_view(), name='user_profile'), 
+    # 🚨 NUEVO ENDPOINT DE LOGIN: /api/usuarios/login/
+    path('login/', LoginView.as_view(), name='login'), 
+    
+    path('register/', RegisterUserView.as_view(), name='user_register'),
+    path('me/', UserProfileView.as_view(), name='user_profile'),
 ]
+
+urlpatterns += router.urls

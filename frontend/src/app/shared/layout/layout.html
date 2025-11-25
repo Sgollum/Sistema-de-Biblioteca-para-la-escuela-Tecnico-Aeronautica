@@ -1,31 +1,62 @@
-<!-- Estructura básica del layout con navegación y router-outlet -->
-<div class="min-h-screen bg-gray-100">
+<!-- RUTA DEL ARCHIVO: frontend/src/app/shared/layout/layout.html -->
+<div class="min-h-screen bg-gray-100 flex flex-col">
     
-    <!-- Aquí iría tu componente de navegación (Navbar/Header) si lo tuvieras, por ahora solo un div simple -->
-    <nav class="bg-indigo-700 p-4 shadow-md flex justify-between items-center text-white">
-        <div class="text-xl font-bold">
-            Mi Biblioteca
-        </div>
-        <div class="space-x-4">
-            <!-- Asumo que aquí tendrías un componente de navegación o enlaces -->
-            <a [routerLink]="['/admin-dashboard']" class="hover:text-indigo-200">Admin</a>
-            <a [routerLink]="['/bibliotecario-dashboard']" class="hover:text-indigo-200">biblio</a>
-            <a [routerLink]="['/lector-dashboard']" class="hover:text-indigo-200">lector</a>
-            <a [routerLink]="['/home']" class="hover:text-indigo-200">Catálogo</a>
-            <button (click)="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md transition duration-150">
-                Cerrar Sesión
-            </button>
+    <!-- Barra de Navegación -->
+    <nav class="bg-indigo-700 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            
+            <!-- Logo / Título -->
+            <div class="text-xl font-bold tracking-wide cursor-pointer" routerLink="/dashboard">
+                📚 Mi Biblioteca
+            </div>
+
+            <!-- Menú de Navegación -->
+            <div class="flex items-center space-x-4">
+                
+                <!-- 1. Botón Catálogo (Visible para TODOS) -->
+                <a routerLink="/dashboard" 
+                   class="hover:bg-indigo-600 px-3 py-2 rounded transition duration-200">
+                   Catálogo
+                </a>
+
+                <!-- 2. Botón Mi Cuenta (Visible para TODOS o solo Lectores) -->
+                <a routerLink="/lector-dashboard" 
+                   class="hover:bg-indigo-600 px-3 py-2 rounded transition duration-200">
+                   Mi Cuenta
+                </a>
+
+                <!-- 3. Botón Panel Bibliotecario (SOLO si es Bibliotecario o Admin) -->
+                @if (isBibliotecario || isAdmin) {
+                    <a routerLink="/bibliotecario-dashboard" 
+                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded font-semibold shadow transition duration-200">
+                       Panel Biblio
+                    </a>
+                }
+
+                <!-- 4. Botón Panel Admin (SOLO si es Admin) -->
+                @if (isAdmin) {
+                    <a routerLink="/admin-dashboard" 
+                       class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded font-semibold shadow transition duration-200">
+                       Panel Admin
+                    </a>
+                }
+
+                <!-- Botón Cerrar Sesión -->
+                <button (click)="logout()" 
+                        class="border border-white hover:bg-white hover:text-indigo-700 px-3 py-2 rounded transition duration-200 ml-4">
+                    Cerrar Sesión
+                </button>
+            </div>
         </div>
     </nav>
 
-    <!-- Contenido principal que cargará el componente de la ruta (AdminDashboard, LectorDashboard, etc.) -->
-    <main class="container mx-auto p-4">
-        <!-- CRÍTICO: Aquí es donde Angular cargará dinámicamente el componente de la ruta activa -->
+    <!-- Contenido Principal (Aquí se cargan las páginas) -->
+    <main class="flex-grow container mx-auto p-4">
         <router-outlet></router-outlet>
     </main>
 
-    <!-- Pie de página (Opcional) -->
-    <footer class="text-center p-4 text-gray-600 mt-8">
-        © 2025 Mi Biblioteca | Gestión de Administrador
+    <!-- Pie de página -->
+    <footer class="bg-gray-800 text-gray-400 text-center py-4 mt-auto">
+        <p>&copy; 2025 Sistema de Biblioteca DGAC</p>
     </footer>
 </div>
