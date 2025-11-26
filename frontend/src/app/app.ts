@@ -13,7 +13,7 @@ import { LectorDashboardComponent } from './pages/lector-dashboard/lector-dashbo
 import { BibliotecarioDashboardComponent } from './pages/bibliotecario-dashboard/bibliotecario-dashboard';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard';
 import { GestionUsuariosComponent } from './pages/gestion-usuarios/gestion-usuarios'; 
-import { UsuarioFormComponent } from './pages/usuario-form/usuario-form'; 
+import { UsuarioForm } from './pages/usuario-form/usuario-form'; 
 
 @Component({
   selector: 'app-root',
@@ -33,7 +33,7 @@ import { UsuarioFormComponent } from './pages/usuario-form/usuario-form';
     BibliotecarioDashboardComponent,
     AdminDashboardComponent,
     GestionUsuariosComponent, 
-    UsuarioFormComponent,     
+    UsuarioForm,     
   ],
   template: `
     <!-- La directiva RouterOutlet se encarga de mostrar el componente de la ruta activa -->

@@ -1,96 +1,85 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // Necesario para ngModel
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
-// Interface para el modelo de Usuario (simplificado)
-interface UsuarioFormModel {
-  nombre: string;
-  apellido: string;
-  email: string;
-  rol: 'Administrador' | 'Bibliotecario' | 'Lector';
-  contrasena?: string; // Solo necesario en la creación
-}
+import { AuthService } from '../../../app/core/services/auth.service';
+// IMPORTANTE: Asegúrate de que esta ruta sea correcta
+import { RegisterCredentials } from '../../../app/core/models/auth.model'; 
 
 @Component({
   selector: 'app-usuario-form',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './usuario-form.html',
-  styleUrls: ['./usuario-form.css']
+  styleUrls: ['./usuario-form.css'],
 })
-export class UsuarioFormComponent implements OnInit {
-  
-  // Estado para saber si estamos editando o creando
-  isEditMode: boolean = false;
-  usuarioId: string | null = null;
-  
-  // Modelo de datos para el formulario
-  usuario: UsuarioFormModel = {
-    nombre: '',
-    apellido: '',
+export class UsuarioForm {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  // 1. Definición del objeto de credenciales
+  credentials: RegisterCredentials = {
+    first_name: '',
+    last_name: '',
+    username: '',
     email: '',
-    rol: 'Lector', // Rol por defecto
-    contrasena: '',
+    password1: '',
+    password2: '',
   };
+
+  message: string | null = null;
+  error: string | null = null;
+  loading: boolean = false;
+
+  public roles = [
+    { value: 'Lector', name: 'Lector' },
+    { value: 'Bibliotecario', name: 'Bibliotecario' },
+    { value: 'Admin', name: 'Administrador' },
+  ];
+
+  /**
+   * Intenta registrar al usuario con los datos y el rol seleccionados.
+   */
+  registerUser() {
+    this.loading = true;
+    this.message = null;
+    this.error = null;
+
+    // 2. Validación de contraseñas (usa password/password2 o password1/password2 según tu modelo)
+    if (this.credentials.password1 !== this.credentials.password2) {
+      this.error = 'Las contraseñas no coinciden.';
+      this.loading = false;
+      return;
+    }
+    
+    // 3. Llamada al servicio de registro (Asumimos que el AuthService tiene la función 'register')
+    this.authService.registerUser(this.credentials).subscribe({
+      next: () => {
+        this.message = '¡Usuario registrado con éxito!';
+        this.loading = false;
+        // Opcional: limpiar formulario o redirigir
+        this.resetForm();
+      },
+      error: (err) => {
+        this.error = 'Error al registrar el usuario. Revisa los datos.';
+        console.error('Registration Error:', err);
+        this.loading = false;
+      },
+    });
+  }
   
-  // Opciones de rol disponibles
-  roles: ('Administrador' | 'Bibliotecario' | 'Lector')[] = ['Lector', 'Bibliotecario', 'Administrador'];
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
-
-  ngOnInit(): void {
-    // 1. Verificar si estamos en modo edición
-    this.usuarioId = this.route.snapshot.paramMap.get('id');
-    this.isEditMode = !!this.usuarioId;
-
-    if (this.isEditMode) {
-      this.loadUsuarioData(this.usuarioId!);
-    }
-  }
-
-  // Simulación de carga de datos de usuario para edición
-  loadUsuarioData(id: string): void {
-    console.log(`Fetching user data for ID: ${id}...`);
-    // MOCK: En una app real, aquí se llama al servicio para obtener los datos
-    const mockData = {
-      nombre: 'Javier',
-      apellido: 'López',
-      email: 'javier.lopez@biblioteca.cl',
-      rol: 'Bibliotecario' as 'Bibliotecario',
+  /**
+   * Limpia el formulario después de un registro exitoso.
+   */
+  private resetForm() {
+    this.credentials = {
+      first_name: '',
+      last_name: '',
+      username: '',
+      email: '',
+      password1: '',
+      password2: '',
     };
-    
-    // Rellenar el formulario con los datos simulados
-    this.usuario.nombre = mockData.nombre;
-    this.usuario.apellido = mockData.apellido;
-    this.usuario.email = mockData.email;
-    this.usuario.rol = mockData.rol;
-    
-    // En modo edición, no es necesario cargar la contraseña
-    this.usuario.contrasena = ''; 
-  }
-
-  // Manejador del submit del formulario
-  onSubmit(): void {
-    if (this.isEditMode) {
-      // Lógica para actualizar (UPDATE) el usuario
-      console.log(`Updating user ${this.usuarioId}:`, this.usuario);
-      alert(`User ${this.usuarioId} updated successfully.`);
-    } else {
-      // Lógica para crear (CREATE) el nuevo usuario
-      console.log('Creating new user:', this.usuario);
-      alert('New user created successfully.');
-    }
-    
-    // Redirigir de vuelta a la lista de usuarios
-    this.router.navigate(['/gestion-usuarios']);
-  }
-
-  // Redirigir a la lista al cancelar
-  onCancel(): void {
-    this.router.navigate(['/gestion-usuarios']);
   }
 }

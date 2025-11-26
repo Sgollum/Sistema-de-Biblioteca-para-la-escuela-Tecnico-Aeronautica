@@ -2,53 +2,54 @@
 <div class="min-h-screen bg-gray-100 flex flex-col">
     
     <!-- Barra de Navegación -->
-    <nav class="bg-indigo-700 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            
-            <!-- Logo / Título -->
-            <div class="text-xl font-bold tracking-wide cursor-pointer" routerLink="/dashboard">
-                📚 Mi Biblioteca
-            </div>
-
-            <!-- Menú de Navegación -->
-            <div class="flex items-center space-x-4">
-                
-                <!-- 1. Botón Catálogo (Visible para TODOS) -->
-                <a routerLink="/dashboard" 
-                   class="hover:bg-indigo-600 px-3 py-2 rounded transition duration-200">
-                   Catálogo
-                </a>
-
-                <!-- 2. Botón Mi Cuenta (Visible para TODOS o solo Lectores) -->
-                <a routerLink="/lector-dashboard" 
-                   class="hover:bg-indigo-600 px-3 py-2 rounded transition duration-200">
-                   Mi Cuenta
-                </a>
-
-                <!-- 3. Botón Panel Bibliotecario (SOLO si es Bibliotecario o Admin) -->
-                @if (isBibliotecario || isAdmin) {
-                    <a routerLink="/bibliotecario-dashboard" 
-                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded font-semibold shadow transition duration-200">
-                       Panel Biblio
-                    </a>
-                }
-
-                <!-- 4. Botón Panel Admin (SOLO si es Admin) -->
-                @if (isAdmin) {
-                    <a routerLink="/admin-dashboard" 
-                       class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded font-semibold shadow transition duration-200">
-                       Panel Admin
-                    </a>
-                }
-
-                <!-- Botón Cerrar Sesión -->
-                <button (click)="logout()" 
-                        class="border border-white hover:bg-white hover:text-indigo-700 px-3 py-2 rounded transition duration-200 ml-4">
-                    Cerrar Sesión
-                </button>
-            </div>
+    <nav class="bg-[#1F364D] text-white shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        
+        <!-- Logo / Título -->
+        <div class="text-xl font-bold tracking-wide cursor-pointer" routerLink="/dashboard">
+            📚 Mi Biblioteca DGAC
         </div>
-    </nav>
+
+        <!-- Menú de Navegación -->
+        <div class="flex items-center space-x-4">
+            
+            <!-- 1. Botón Catálogo (Visible para TODOS) -->
+            <a routerLink="/dashboard" 
+               class="hover:bg-[#172836] px-3 py-2 rounded transition duration-200">
+               Catálogo
+            </a>
+
+            <!-- 2. Botón Mi Cuenta -->
+            <a routerLink="/lector-dashboard" 
+               class="hover:bg-[#172836] px-3 py-2 rounded transition duration-200">
+               Mi Cuenta
+            </a>
+
+            <!-- 3. Botón Panel Bibliotecario -->
+            @if (isBibliotecario || isAdmin) {
+                <a routerLink="/bibliotecario-dashboard" 
+                   class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded font-semibold shadow transition duration-200">
+                   Panel Biblio
+                </a>
+            }
+
+            <!-- 4. Botón Panel Admin -->
+            @if (isAdmin) {
+                <a routerLink="/admin-dashboard" 
+                   class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded font-semibold shadow transition duration-200">
+                   Panel Admin
+                </a>
+            }
+
+            <!-- Botón Cerrar Sesión -->
+            <button (click)="logout()" 
+                    class="border border-white hover:bg-white hover:text-[#1F364D] px-3 py-2 rounded transition duration-200 ml-4">
+                Cerrar Sesión
+            </button>
+        </div>
+    </div>
+</nav>
+
 
     <!-- Contenido Principal (Aquí se cargan las páginas) -->
     <main class="flex-grow container mx-auto p-4">

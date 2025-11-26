@@ -11,7 +11,7 @@ import { LectorDashboardComponent } from './pages/lector-dashboard/lector-dashbo
 // Importaciones de Gestión de Usuarios
 import { Layout } from './shared/layout/layout';
 import { GestionUsuariosComponent } from './pages/gestion-usuarios/gestion-usuarios'; 
-import { UsuarioFormComponent } from './pages/usuario-form/usuario-form'; 
+import { UsuarioForm } from './pages/usuario-form/usuario-form'; 
 
 export const routes: Routes = [
     // 1. Rutas Públicas (Sin Layout)
@@ -75,12 +75,12 @@ export const routes: Routes = [
             },
             {
                 path: 'crear-usuario',
-                component: UsuarioFormComponent, 
+                component: UsuarioForm, 
                 title: 'Crear Nuevo Usuario'
             },
             {
                 path: 'editar-usuario/:id', 
-                component: UsuarioFormComponent,
+                component: UsuarioForm,
                 title: 'Editar Usuario'
             },
             

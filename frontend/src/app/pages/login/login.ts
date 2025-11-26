@@ -18,9 +18,10 @@ import { LoginCredentials } from '../../core/models/auth.model';
     <div class="flex items-center justify-center min-h-screen p-4">
       <div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-xl shadow-2xl p-8">
 
-        <h2 class="text-3xl font-extrabold text-center text-indigo-700 mb-6">
-          Iniciar Sesión
+        <h2 class="text-3xl font-extrabold text-center text-primary-custom mb-6">
+        Iniciar Sesión
         </h2>
+
 
         <form (ngSubmit)="onSubmit(loginForm.valid)"
               #loginForm="ngForm"
@@ -34,7 +35,7 @@ import { LoginCredentials } from '../../core/models/auth.model';
 
           <div>
             <label for="identifier" class="block text-sm font-medium text-gray-700">
-              Correo Electrónico o Usuario
+              Correo Electrónico
             </label>
             <input
               type="text"
@@ -44,7 +45,7 @@ import { LoginCredentials } from '../../core/models/auth.model';
               required
               class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm
                      focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
-              placeholder="Ej: nombre@correo.cl o nombreusuario"
+              placeholder="Ej: nombre@correo.cl"
             />
           </div>
 
@@ -68,10 +69,12 @@ import { LoginCredentials } from '../../core/models/auth.model';
             type="submit"
             [disabled]="!loginForm.valid || isLoading"
             class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md
-                   text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 
-                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
-                   disabled:opacity-50 transition duration-300"
-          >
+                  text-base font-medium text-white 
+                  bg-[#1F364D] hover:bg-[#172836] 
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1F364D]
+                  disabled:opacity-50 transition duration-300"
+            >
+
             @if (isLoading) {
               Cargando...
             } @else {
@@ -80,6 +83,7 @@ import { LoginCredentials } from '../../core/models/auth.model';
           </button>
         </form>
 
+        <!-- SE ELIMINÓ ESTE BLOQUE
         <div class="mt-6 text-center">
           <p class="text-sm text-gray-600">
             ¿No tienes una cuenta?
@@ -91,11 +95,17 @@ import { LoginCredentials } from '../../core/models/auth.model';
             </a>
           </p>
         </div>
+        -->
+
       </div>
     </div>
   `,
   styles: [
     `
+      .text-primary-custom {
+  color: #1F364D !important;
+}
+
       .login-background {
         position: fixed;
         inset: 0;
@@ -103,7 +113,7 @@ import { LoginCredentials } from '../../core/models/auth.model';
         height: 100%;
         background:
           linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-          url('https://www.google.com/search?q=https://placehold.co/1920x1080/4F46E5/FFFFFF%3Ftext%3DFondo%2BBiblioteca');
+          url('https://wallpapers.com/images/hd/library-background-j511zvk12mbkip3l.jpg');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -160,7 +170,6 @@ export class LoginComponent {
       error: (err) => {
         this.isLoading = false;
 
-        // Manejo detallado de errores
         if (err.status === 401) {
           this.errorMessage = 'Credenciales inválidas. Verifica tu usuario/correo y contraseña.';
         } else if (err.status === 400) {
@@ -174,3 +183,4 @@ export class LoginComponent {
     });
   }
 }
+

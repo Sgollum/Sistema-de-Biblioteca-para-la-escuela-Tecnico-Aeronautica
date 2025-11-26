@@ -1,44 +1,67 @@
-<!-- RUTA DEL ARCHIVO: frontend/src/app/pages/admin-dashboard/admin-dashboard.html -->
 <div class="p-6 bg-gray-50 min-h-screen">
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Panel de Administración</h1>
         <p class="text-gray-600">Control total de usuarios y configuración del sistema.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- KPI: Total Usuarios -->
-        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-indigo-500">
-            <h3 class="text-gray-500 font-medium uppercase text-sm">Total de Usuarios</h3>
-            <p class="text-4xl font-extrabold text-gray-900 mt-2">{{ totalUsuarios }}</p>
-            <a [routerLink]="['/gestion-usuarios']" class="inline-block mt-4 text-indigo-600 hover:text-indigo-800 font-medium text-sm">
-                Gestionar Usuarios &rarr;
-            </a>
+    <!-- Indicadores de Carga y Error -->
+    @if (isLoading) {
+        <div class="flex justify-center items-center h-40">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <p class="ml-4 text-indigo-600">Cargando estadísticas...</p>
         </div>
-
-        <!-- KPI: Seguridad -->
-        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-green-500">
-            <h3 class="text-gray-500 font-medium uppercase text-sm">Estado de Seguridad</h3>
-            <div class="flex items-center mt-2">
-                <span class="text-2xl font-bold text-green-600">Seguro</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-            <p class="text-sm text-gray-500 mt-2">0 Alertas detectadas hoy.</p>
+    } @else if (errorMessage) {
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+            <strong class="font-bold">Error de Acceso:</strong>
+            <span class="block sm:inline ml-2">{{ errorMessage }}</span>
+            <p class="text-sm mt-1">Asegúrate de haber iniciado sesión como Administrador.</p>
         </div>
-
-        <!-- Acceso Rápido -->
-        <div class="bg-white p-6 rounded-xl shadow-md">
-            <h3 class="text-gray-800 font-bold mb-4">Administración Rápida</h3>
-            <div class="flex flex-col space-y-3">
-                <a [routerLink]="['/crear-usuario']" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center font-bold py-2 px-4 rounded transition duration-200">
-                    Crear Nuevo Usuario
+    } @else {
+        <!-- Sección de KPIs (Visible solo si no hay carga ni error) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- KPI: Total Usuarios (Muestra la cantidad REAL del .ts) -->
+            <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-indigo-500">
+                <h3 class="text-gray-500 font-medium uppercase text-sm">Total de Usuarios Registrados</h3>
+                <!-- Muestra el número real obtenido -->
+                <p class="text-4xl font-extrabold text-gray-900 mt-2">{{ totalUsuarios }}</p>
+                <a [routerLink]="['/gestion-usuarios']" class="inline-block mt-4 text-indigo-600 hover:text-indigo-800 font-medium text-sm">
+                    Gestionar Usuarios &rarr;
                 </a>
-                <button class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition duration-200">
-                    Ver Reporte de Actividad
-                </button>
+            </div>
+
+            <!-- KPI: Seguridad -->
+            <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-green-500">
+                <h3 class="text-gray-500 font-medium uppercase text-sm">Estado de Seguridad</h3>
+                <div class="flex items-center mt-2">
+                    <span class="text-2xl font-bold text-green-600">Seguro</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">{{ alertasSeguridad }} Alertas detectadas hoy.</p>
+            </div>
+
+            <!-- Acceso Rápido -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-gray-800 font-bold mb-4">Administración Rápida</h3>
+                <div class="flex flex-col space-y-3">
+                    <a [routerLink]="['/crear-usuario']" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center font-bold py-2 px-4 rounded transition duration-200">
+                        Crear Nuevo Usuario
+                    </a>
+                    <button class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition duration-200">
+                        Ver Reporte de Actividad
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+        
+        <!-- Sección de Reportes -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-1 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-gray-800 font-bold mb-4 border-b pb-2">Última Actividad y Logs</h3>
+                <p class="text-gray-500">Aquí se mostrará un listado de los últimos registros o acciones del sistema.</p>
+            </div>
+        </div>
+    }
 </div>
