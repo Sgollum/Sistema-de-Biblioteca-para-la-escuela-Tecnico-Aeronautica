@@ -1,4 +1,3 @@
-# backend/MS_Usuarios/views.py
 from rest_framework import generics, permissions, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -15,6 +14,20 @@ class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all().order_by('id')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
+    
+    # --- CAMBIO CLAVE PARA OBTENER EL CONTEO DIRECTO ---
+    # Al obtener la lista (GET /api/usuarios/), forzamos a que solo se devuelva
+    # la lista de objetos, no el objeto paginado con "count".
+    # Esto activará la lógica de conteo de tu frontend 'response.length'.
+    pagination_class = None # <--- ¡ESTO ES LO QUE NECESITAS AÑADIR/MODIFICAR!
+    # --------------------------------------------------
+
+    # Sobreescribimos list para retornar solo la cuenta si se pide explícitamente,
+    # pero para simplicidad, solo deshabilitaremos la paginación.
+    # def list(self, request, *args, **kwargs):
+    #     if 'count' in request.query_params:
+    #         return Response({'total': self.get_queryset().count()})
+    #     return super().list(request, *args, **kwargs)
 
 
 class UserProfileView(generics.RetrieveAPIView):

@@ -1,112 +1,122 @@
-
-  Tabla de Gestión de Usuarios 
--->
-<div class="p-6 md:p-10 bg-gray-50 min-h-screen">
+<!-- Utilizando Tailwind CSS para el estilo responsivo y moderno -->
+<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
   
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-800">Gestión de Usuarios</h1>
-    
-    <!-- Botón para crear nuevo usuario -->
-    <button (click)="crearUsuario()"
-            class="flex items-center space-x-2 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50">
-      <!-- Icono SVG de usuario con signo de más -->
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-3 5a10 10 0 110-20 10 10 0 010 20zm-5-3h10a5 5 0 00-10 0z"></path></svg>
-      <span>Crear Nuevo Usuario</span>
-    </button>
+  <!-- Mensaje de Error de Carga -->
+  <div *ngIf="errorMessage" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md shadow-md" role="alert">
+    <p class="font-bold">Error de Carga</p>
+    <p>{{ errorMessage }}</p>
+    <button (click)="loadUsuarios()" class="mt-2 text-sm font-semibold underline">Intentar Recargar</button>
   </div>
-  
-  <div class="bg-white rounded-xl shadow-lg overflow-x-auto">
+
+  <!-- Mensaje de Acción (Snackbar/Toast) -->
+  <div *ngIf="actionMessage" class="fixed top-4 right-4 z-50 p-4 rounded-lg shadow-2xl"
+       [ngClass]="{'bg-green-500 text-white': actionMessage.includes('correctamente') || actionMessage.includes('habilitada'), 'bg-red-500 text-white': actionMessage.includes('Error') || actionMessage.includes('deshabilitada')}">
+    {{ actionMessage }}
+  </div>
+
+  <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b pb-4">
+    <h1 class="text-3xl font-extrabold text-gray-900">Gestión de Usuarios</h1>
+    <button (click)="crearUsuario()" 
+            class="mt-4 sm:mt-0 px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 ease-in-out flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+      Crear Nuevo Usuario
+    </button>
+  </header>
+
+  <!-- Indicador de Carga -->
+  <div *ngIf="isLoading" class="flex justify-center items-center h-40">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+    <p class="ml-4 text-indigo-600">Cargando usuarios...</p>
+  </div>
+
+  <!-- Tabla de Usuarios (Solo si no está cargando y hay usuarios) -->
+  <div *ngIf="!isLoading && usuarios.length > 0" class="shadow-lg overflow-hidden border-b border-gray-200 sm:rounded-lg bg-white">
     <table class="min-w-full divide-y divide-gray-200">
-      
-      <!-- Cabecera de la tabla -->
-      <thead class="bg-indigo-50">
+      <thead class="bg-gray-50">
         <tr>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            ID
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Nombre Completo
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Email
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Rol
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Estado
-          </th>
-          <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Acciones
-          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre Completo</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
         </tr>
       </thead>
-      
-      <!-- Cuerpo de la tabla (usando Angular @for) -->
-      <tbody class="bg-white divide-y divide-gray-200">
-        @for (usuario of usuarios; track usuario.id) {
-          <tr class="hover:bg-gray-50 transition duration-150">
-            <!-- ID -->
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              {{ usuario.id }}
-            </td>
-            <!-- Nombre Completo -->
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ usuario.nombre }} {{ usuario.apellido }}
-            </td>
-            <!-- Email -->
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ usuario.email }}
-            </td>
-            <!-- Rol -->
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                           {{ usuario.rol === 'Administrador' ? 'bg-red-100 text-red-800' : 
-                              (usuario.rol === 'Bibliotecario' ? 'bg-yellow-100 text-yellow-800' : 
-                              'bg-blue-100 text-blue-800') }}">
-                {{ usuario.rol }}
-              </span>
-            </td>
-            <!-- Estado -->
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                           {{ usuario.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                {{ usuario.activo ? 'Activo' : 'Inactivo' }}
-              </span>
-            </td>
-            
-            <!-- Acciones -->
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-              
-              <!-- Botón Editar -->
-              <button (click)="editarUsuario(usuario.id)"
-                      class="text-indigo-600 hover:text-indigo-900 transition duration-150 focus:outline-none">
-                Editar
-              </button>
-              
-              <!-- Botón Habilitar/Deshabilitar -->
-              <button (click)="toggleActive(usuario)"
-                      class="text-sm transition duration-150 focus:outline-none
-                             {{ usuario.activo ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800' }}">
-                {{ usuario.activo ? 'Desactivar' : 'Activar' }}
-              </button>
+      <tbody class="divide-y divide-gray-200">
+        <tr *ngFor="let user of usuarios" class="hover:bg-indigo-50 transition duration-100">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user.id }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.first_name }} {{ user.last_name }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
+          
+          <td class="px-6 py-4 whitespace-nowrap">
+            <!-- NOTA: El comentario de CORRECCIÓN se ha movido fuera de [ngClass] para evitar errores de parser. -->
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  [ngClass]="{
+                    'bg-indigo-100 text-indigo-800': user.role === 'admin',
+                    'bg-yellow-100 text-yellow-800': user.role === 'bibliotecario',
+                    'bg-blue-100 text-blue-800': user.role === 'lector'
+                  }">
+              {{ rolDisplay[user.role] || user.role }}
+            </span>
+          </td>
 
-              <!-- Botón Eliminar -->
-              <button (click)="eliminarUsuario(usuario.id)"
-                      class="text-red-600 hover:text-red-900 transition duration-150 focus:outline-none">
-                Eliminar
-              </button>
-            </td>
-          </tr>
-        }
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  [ngClass]="{
+                    'bg-green-100 text-green-800': user.is_active,
+                    'bg-red-100 text-red-800': !user.is_active
+                  }">
+              {{ user.is_active ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button (click)="editarUsuario(user.id)" class="text-indigo-600 hover:text-indigo-900 mx-1 transition duration-150">Editar</button>
+            
+            <button (click)="confirmAction(user, 'toggle')" 
+                    class="mx-1 transition duration-150"
+                    [ngClass]="{'text-red-600 hover:text-red-900': user.is_active, 'text-green-600 hover:text-green-900': !user.is_active}">
+              {{ user.is_active ? 'Desactivar' : 'Activar' }}
+            </button>
+            
+            <button (click)="confirmAction(user, 'delete')" class="text-gray-400 hover:text-gray-600 mx-1 transition duration-150">Eliminar</button>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
   
-  <!-- Mensaje si no hay usuarios -->
-  @if (usuarios.length === 0) {
-    <div class="text-center py-10 text-gray-500">
-      <p>No hay usuarios registrados.</p>
+  <!-- Mensaje de no usuarios -->
+  <div *ngIf="!isLoading && usuarios.length === 0 && !errorMessage" class="text-center p-10 border-2 border-dashed border-gray-300 rounded-lg bg-white">
+    <p class="text-xl font-semibold text-gray-500">No hay usuarios registrados.</p>
+    <p class="text-gray-400 mt-2">Usa el botón "Crear Nuevo Usuario" para empezar.</p>
+  </div>
+
+  <!-- Modal de Confirmación -->
+  <div *ngIf="userToConfirm" class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-2xl max-w-sm w-full transform transition-all">
+      <h3 class="text-lg leading-6 font-bold text-gray-900">Confirmar Acción</h3>
+      <div class="mt-2">
+        <p *ngIf="userToConfirm.actionType === 'delete'" class="text-sm text-gray-500">
+          ¿Está seguro de que desea **ELIMINAR** al usuario 
+          <span class="font-semibold">{{ userToConfirm.first_name }} {{ userToConfirm.last_name }}</span>? 
+          Esta acción es permanente.
+        </p>
+        <p *ngIf="userToConfirm.actionType === 'toggle'" class="text-sm text-gray-500">
+          ¿Desea {{ userToConfirm.is_active ? 'desactivar' : 'activar' }} la cuenta de 
+          <span class="font-semibold">{{ userToConfirm.first_name }} {{ userToConfirm.last_name }}</span>?
+        </p>
+      </div>
+      <div class="mt-4 flex justify-end space-x-3">
+        <button type="button" (click)="userToConfirm = null" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition">
+          Cancelar
+        </button>
+        <button type="button" (click)="executeConfirmedAction()" 
+                class="px-4 py-2 text-sm font-medium text-white rounded-md transition"
+                [ngClass]="{'bg-red-600 hover:bg-red-700': userToConfirm.actionType === 'delete', 'bg-indigo-600 hover:bg-indigo-700': userToConfirm.actionType === 'toggle'}">
+          Confirmar
+        </button>
+      </div>
     </div>
-  }
+  </div>
 </div>

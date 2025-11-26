@@ -1,5 +1,3 @@
-# Django settings for Biblioteca project.
-
 import os
 from pathlib import Path
 # Se añade import para la configuración de la base de datos
@@ -63,6 +61,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.messages',
             ],
         },
     },
@@ -154,12 +153,16 @@ AUTHENTICATION_BACKENDS = [
 
 # --- CONFIGURACIONES ADICIONALES (DRF y CORS) ---
 
-# CONFIGURACIÓN CLAVE para usar TokenAuthentication
+# ==========================================================
+# CONFIGURACIÓN CLAVE para usar TokenAuthentication (Modificado)
+# ==========================================================
 REST_FRAMEWORK = {
+    # CRÍTICO: Usamos nuestra clase personalizada que soporta 'Bearer'.
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'MS_Usuarios.authentication.BearerTokenAuthentication', # <<-- ¡CAMBIO CLAVE!
     ],
     'DEFAULT_PERMISSION_CLASSES': [
+        # Es bueno dejar IsAuthenticated como permiso por defecto
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
@@ -180,7 +183,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
-    'authorization',
+    'authorization', # <<-- CRÍTICO para que Django vea el token
     'content-type',
     'dnt',
     'origin',
