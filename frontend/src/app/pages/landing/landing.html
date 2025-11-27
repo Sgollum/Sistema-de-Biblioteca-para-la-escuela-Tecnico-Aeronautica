@@ -1,41 +1,73 @@
 <div class="landing-container">
+
     <!-- HERO -->
     <header class="hero">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>Mi Biblioteca Digital DGAC</h1>
-            <p>Accede a nuestra colección y gestiona tus recursos con facilidad.</p>
+            <h1>Biblioteca Digital DGAC</h1>
+            <p>Acceso seguro a documentos aeronáuticos, normativas y material técnico institucional.</p>
             <button class="hero-btn" (click)="goToLogin()">Ingresar al Sistema</button>
         </div>
     </header>
 
-    <!-- SERVICIOS -->
-    <section class="info-section">
-        <h2>Nuestros Servicios</h2>
+    <!-- INFO GENERAL -->
+    <section class="info-section fade-in">
+        <img 
+            src="https://www.lacuarta.com/resizer/v2/2Z5SU6YEUFC7PDD5FD7RXOP2VU.jpg?auth=eb21536ffaa3df7724952381c9104dcd2619181f0b208605181066536105ea50&focal=571%2C498&width=800&height=533&quality=70"
+            alt="Documentación aeronáutica" 
+            class="section-img"
+        >
 
-        <div class="service-cards">
-            <div class="card">
-                <div class="icon">📚</div>
-                <h3>Explora Libros</h3>
-                <p>Consulta nuestro catálogo actualizado de títulos disponibles.</p>
-            </div>
-
-            <div class="card">
-                <div class="icon">🔄</div>
-                <h3>Gestiona Préstamos</h3>
-                <p>Control total de préstamos, renovaciones y devoluciones.</p>
-            </div>
-
-            <div class="card">
-                <div class="icon">👤</div>
-                <h3>Administra Usuarios</h3>
-                <p>Supervisa los usuarios del sistema y gestiona sus accesos.</p>
-            </div>
+        <div class="text-block">
+            <h2>¿Qué es la Biblioteca DGAC?</h2>
+            <p>
+                Es el repositorio oficial donde los funcionarios pueden consultar documentación técnica, 
+                normativa aeronáutica, manuales operacionales y material de apoyo a la formación institucional.
+            </p>
         </div>
     </section>
 
-    <!-- CTA FINAL -->
-    <section class="call-to-action">
+    <!-- SERVICIOS -->
+    <section class="services-section fade-in">
+        <h2>Nuestros Servicios</h2>
+
+        <div class="service-cards">
+
+            <!-- CARD 1 -->
+            <div class="card">
+                <img 
+                    src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=900&q=80"
+                    alt="Biblioteca técnica aeronáutica"
+                >
+                <h3>Acceso a Colecciones</h3>
+                <p>Explora material aeronáutico, técnico y bibliográfico institucional.</p>
+            </div>
+
+            <!-- CARD 2 -->
+            <div class="card">
+                <img 
+                    src="https://www.dgac.gob.cl/wp-content/uploads/2017/08/normativa.jpg"
+                    alt="Normativa aeronáutica DGAC"
+                >
+                <h3>Normativas y Procedimientos</h3>
+                <p>Mantente actualizado con la regulación aeronáutica vigente.</p>
+            </div>
+
+            <!-- CARD 3 -->
+            <div class="card">
+                <img 
+                    src="https://umiles.cl/wp-content/uploads/2024/08/89ffc5_847d9d7badad486a94efc5f692a03d7amv2-1024x768.webp"
+                    alt="Capacitación DGAC"
+                >
+                <h3>Apoyo a la Formación</h3>
+                <p>Material académico para cursos internos y perfeccionamiento.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="call-to-action fade-in">
         <p>¿Listo para comenzar?</p>
         <button (click)="goToLogin()">Iniciar Sesión</button>
     </section>
@@ -44,4 +76,8 @@
     <footer>
         <p>&copy; 2025 Dirección General de Aeronáutica Civil — Biblioteca DGAC</p>
     </footer>
+
 </div>
+
+
+

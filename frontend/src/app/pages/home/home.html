@@ -1,92 +1,117 @@
-<!-- Encabezado y búsqueda -->
-<div class="container mx-auto p-4 sm:p-6 lg:p-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-extrabold text-gray-900">Catálogo de Libros</h1>
-        
-        <!-- Botón "Registrar Nuevo Libro" (visible para Bibliotecario/Admin) -->
+<!-- CONTENEDOR PRINCIPAL: Máximo 1200px de ancho para centrar el contenido -->
+<div class="catalogo-container">
+
+    <!-- TÍTULO Y ACCIÓN PRINCIPAL -->
+    <div class="header-bar">
+        <h1 class="titulo">
+            📚 Catálogo de Libros
+        </h1>
+
+        <!-- Botón Registrar (solo Admin/Bibliotecario) -->
         <a *ngIf="currentRole === 'bibliotecario' || currentRole === 'admin'"
-           [routerLink]="['/libro/form']"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300">
+           [routerLink]="['/crear-libro']"
+           class="btn-crear">
             + Registrar Nuevo Libro
         </a>
     </div>
 
-    <!-- Barra de Búsqueda -->
-    <div class="mb-8">
-        <form (ngSubmit)="buscarLibros()" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-            <input type="text" 
-                   [(ngModel)]="searchQuery" 
-                   name="searchQuery"
-                   placeholder="Buscar por Título, Autor o ISBN..."
-                   class="w-full sm:w-3/4 p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-            <button type="submit"
-                    class="w-full sm:w-1/4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-300">
-                Buscar
-            </button>
-        </form>
-        <p class="mt-4 text-gray-600">Mostrando **{{ totalLibros }}** libros.</p>
+    <!-- BARRA DE BÚSQUEDA -->
+    <div class="busqueda-contenedor">
+        <input 
+            type="text"
+            [(ngModel)]="searchQuery"
+            name="searchQuery"
+            placeholder="Buscar por Título, Autor o ISBN..."
+            class="input-busqueda"
+            (keyup.enter)="buscarLibros()"
+        >
+
+        <button class="btn-buscar" (click)="buscarLibros()" [disabled]="isLoading">
+            🔍 Buscar
+        </button>
     </div>
 
-    <!-- Lista de Libros -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        <div *ngFor="let libro of libros" class="bg-white rounded-xl shadow-2xl overflow-hidden hover:shadow-indigo-400 transition duration-300 transform hover:scale-[1.02] border border-gray-200">
+    <!-- Contador de Libros -->
+    <p class="contador-libros">
+        Mostrando <strong>{{ totalLibros }}</strong> libro{{ totalLibros === 1 ? '' : 's' }}.
+    </p>
+
+    <!-- ⭐ Mensaje de Error (si existe) -->
+    <div *ngIf="errorMessage" class="mensaje-estado mensaje-error">
+        {{ errorMessage }}
+    </div>
+
+    <!-- ⭐ Indicador de Carga -->
+    <div *ngIf="isLoading" class="loading-indicator">
+        <div style="border: 4px solid rgba(0, 0, 0, 0.1); border-top: 4px solid #0d4f84; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
+        <p style="color: #0d4f84; font-weight: 600;">Cargando...</p>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+    </div>
+    
+    <!-- GRID DE LIBROS -->
+    <div *ngIf="!isLoading" class="libros-grid">
+
+        <div *ngFor="let libro of libros" class="tarjeta-libro">
             
-            <!-- Imagen y Fallback -->
-            <div class="h-64 bg-gray-100 flex items-center justify-center">
+            <!-- Imagen -->
+            <div class="img-contenedor">
                 <img 
-                    [src]="libro.imagen_url || 'https://placehold.co/400x600/CCCCCC/333333?text=No%20Cover'"
-                    alt="Portada de {{ libro.titulo }}" 
-                    class="w-full h-full object-cover"
-                    onerror="this.onerror=null;this.src='https://placehold.co/400x600/CCCCCC/333333?text=No%20Cover'"
-                />
+                    [src]="libro.imagen_url || ''"
+                    alt="Portada de {{ libro.titulo }}"
+                    class="libro-img"
+                    (error)="onImageError($event)"
+                >
             </div>
 
+            <!-- Información -->
+            <div class="libro-detalles">
+                <h3 class="libro-titulo">{{ libro.titulo }}</h3>
 
-            <!-- Detalles del Libro -->
-            <div class="p-5">
-                <h3 class="text-xl font-bold text-gray-900 mb-1">{{ libro.titulo }}</h3>
-                <p class="text-sm text-gray-600">Autor: <span class="font-medium">{{ libro.autor_nombre }}</span></p>
-                <p class="text-sm text-gray-600">Categoría: <span class="font-medium">{{ libro.categoria_nombre }}</span></p>
-                <p class="text-sm text-gray-600 mb-4">ISBN: {{ libro.isbn }}</p>
+                <p class="detalle"><strong>Autor:</strong> {{ libro.autor_nombre }}</p>
+                <p class="detalle"><strong>Categoría:</strong> {{ libro.categoria_nombre }}</p>
+                <p class="detalle"><strong>ISBN:</strong> {{ libro.isbn }}</p>
 
-                <!-- Estado de Disponibilidad y Acciones de Lector -->
-                <div class="mt-4 border-t pt-4">
-                    <p class="font-semibold text-base mb-2">
-                        Disponibles: <span [class]="{'text-green-600': libro.copias_disponibles > 0, 'text-red-600': libro.copias_disponibles === 0}">
-                            {{ libro.copias_disponibles }}
-                        </span>
-                    </p>
-
-                    <!-- Acciones para Lector (Solicitar Préstamo) -->
-                    <button *ngIf="currentRole === 'lector' && libro.copias_disponibles > 0"
-                            class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition duration-300">
-                        Solicitar Préstamo
-                    </button>
-                    <span *ngIf="currentRole === 'lector' && libro.copias_disponibles === 0" 
-                          class="w-full block text-center bg-red-100 text-red-700 font-semibold py-2 rounded-lg border border-red-400">
-                        No Disponible
+                <p class="disponibilidad">
+                    Disponibles:
+                    <span 
+                        [class.disponible]="libro.copias_disponibles > 0"
+                        [class.no-disponible]="libro.copias_disponibles === 0">
+                        {{ libro.copias_disponibles }}
                     </span>
-                </div>
+                </p>
 
+                <!-- Acciones para lectores -->
+                <!-- TODO: Se necesita implementar la función solicitarPrestamo en TS -->
+                <button 
+                    
+                    class="btn-prestar">
+                    Solicitar Préstamo
+                </button>
 
-                <!-- Acciones de Bibliotecario/Admin (Editar/Eliminar) -->
-                <div *ngIf="currentRole === 'bibliotecario' || currentRole === 'admin'" class="mt-4 flex space-x-2">
-                    <button [routerLink]="['/libro/form', libro.id]"
-                            class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-bold py-2 rounded-lg transition duration-300 text-sm">
+                <span 
+                    *ngIf="currentRole === 'lector' && libro.copias_disponibles === 0"
+                    class="no-disponible-box">
+                    No Disponible
+                </span>
+
+                <!-- Acciones Admin/Bibliotecario -->
+                <div *ngIf="currentRole === 'bibliotecario' || currentRole === 'admin'" class="acciones-admin">
+                    <a [routerLink]="['/libro/form', libro.id]" class="btn-editar">
                         Editar
-                    </button>
-                    <button (click)="eliminarLibro(libro.id)"
-                            class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg transition duration-300 text-sm">
+                    </a>
+
+                    <button (click)="eliminarLibro(libro.id)" class="btn-eliminar">
                         Eliminar
                     </button>
                 </div>
-
             </div>
         </div>
+
     </div>
-    
-    <!-- Mensaje si no hay libros (opcional, si los libros.length es 0) -->
-    <div *ngIf="libros.length === 0" class="mt-10 text-center text-gray-500">
-        <p class="text-lg">No se encontraron libros que coincidan con la búsqueda.</p>
+
+    <!-- Si no hay resultados y no está cargando -->
+    <div *ngIf="!isLoading && libros.length === 0" class="sin-libros">
+        No se encontraron libros que coincidan con la búsqueda.
     </div>
+
 </div>

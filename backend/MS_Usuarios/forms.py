@@ -4,10 +4,14 @@ from .models import Usuario
 
 # Formulario de CREACIÓN
 class UsuarioCreationForm(UserCreationForm):
-
-    class Meta:
+    # La corrección clave es heredar de UserCreationForm.Meta y 
+    # concatenar los campos, asegurando que 'rol' se procese correctamente.
+    class Meta(UserCreationForm.Meta):
         model = Usuario
-        fields = ('username', 'first_name', 'last_name', 'email', 'rol')
+        
+        # Combinamos los campos base de autenticación con nuestros campos custom.
+        # Esto incluye los campos 'password', 'password2' de forma implícita.
+        fields = UserCreationForm.Meta.fields + ('rol', 'first_name', 'last_name', 'email')
 
         labels = {
             'username': 'Nombre de usuario',
@@ -20,7 +24,7 @@ class UsuarioCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Campos obligatorios
+        # Campos obligatorios (se mantienen bien)
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
         self.fields['email'].required = True
@@ -31,6 +35,7 @@ class UsuarioCreationForm(UserCreationForm):
 class UsuarioChangeForm(UserChangeForm):
     class Meta:
         model = Usuario
+        # Estos campos estaban correctos ya que UserChangeForm es más flexible.
         fields = (
             'username',
             'first_name',

@@ -1,1 +1,163 @@
-<p>libro-form works!</p>
+<div class="p-4 md:p-8 min-h-screen bg-gray-50">
+  
+  <!-- Encabezado y Botón Volver -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-extrabold text-indigo-700">Registrar Nuevo Libro</h1>
+    <button (click)="goBack()" class="flex items-center text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+      </svg>
+      Volver
+    </button>
+  </div>
+  
+  <!-- Contenedor Principal del Formulario -->
+  <div class="bg-white p-6 md:p-10 rounded-xl shadow-2xl max-w-4xl mx-auto">
+    
+    <!-- Mensajes de Estado (Éxito / Error) -->
+    <div *ngIf="successMessage" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
+      <p class="font-bold">¡Éxito!</p>
+      <p>{{ successMessage }}</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
+      <p class="font-bold">Error al Registrar</p>
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="libroForm" (ngSubmit)="onSubmit()" class="space-y-8">
+      
+      <!-- Sección de Campos de Texto (2 Columnas) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+        
+        <!-- Título -->
+        <div>
+          <label for="titulo" class="block text-sm font-medium text-gray-700 mb-1">Título <span class="text-red-500">*</span></label>
+          <input 
+            id="titulo" 
+            type="text" 
+            formControlName="titulo" 
+            placeholder="Ej: Cien años de soledad"
+            class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+          />
+          <p *ngIf="isFieldInvalid('titulo')" class="mt-1 text-xs text-red-600">El título es obligatorio.</p>
+        </div>
+
+        <!-- ISBN -->
+        <div>
+          <label for="isbn" class="block text-sm font-medium text-gray-700 mb-1">ISBN (13 dígitos) <span class="text-red-500">*</span></label>
+          <input 
+            id="isbn" 
+            type="text" 
+            formControlName="isbn" 
+            placeholder="Ej: 9781234567890"
+            maxlength="13"
+            class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+          />
+          <p *ngIf="isFieldInvalid('isbn')" class="mt-1 text-xs text-red-600">ISBN debe ser de 13 dígitos y es obligatorio.</p>
+        </div>
+
+        <!-- Autor (Select) -->
+        <div>
+          <label for="autor" class="block text-sm font-medium text-gray-700 mb-1">Autor <span class="text-red-500">*</span></label>
+          <select 
+            id="autor" 
+            formControlName="autor" 
+            class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+          >
+            <option [ngValue]="null" disabled>-- Selecciona un autor --</option>
+            <!-- Muestra autores cargados, si el array está vacío o null, muestra el mensaje de carga -->
+            <ng-container *ngIf="autores.length > 0; else loadingAutores">
+              <option *ngFor="let autor of autores" [ngValue]="autor.id">
+                {{ autor.nombre }} {{ autor.apellido }}
+              </option>
+            </ng-container>
+            <ng-template #loadingAutores>
+                <option [ngValue]="null" disabled>Cargando autores... (Asegúrate de tener autores creados)</option>
+            </ng-template>
+          </select>
+          <p *ngIf="isFieldInvalid('autor')" class="mt-1 text-xs text-red-600">Debes seleccionar un autor.</p>
+        </div>
+
+        <!-- Categoría (Select) -->
+        <div>
+          <label for="categoria" class="block text-sm font-medium text-gray-700 mb-1">Categoría/Género <span class="text-red-500">*</span></label>
+          <select 
+            id="categoria" 
+            formControlName="categoria" 
+            class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 bg-white focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+          >
+            <option [ngValue]="null" disabled>-- Selecciona una categoría --</option>
+            <ng-container *ngIf="categorias.length > 0; else loadingCategorias">
+                <option *ngFor="let cat of categorias" [ngValue]="cat.id">
+                  {{ cat.nombre }}
+                </option>
+            </ng-container>
+            <ng-template #loadingCategorias>
+                <option [ngValue]="null" disabled>Cargando categorías... (Asegúrate de tener categorías creadas)</option>
+            </ng-template>
+          </select>
+          <p *ngIf="isFieldInvalid('categoria')" class="mt-1 text-xs text-red-600">Debes seleccionar una categoría.</p>
+        </div>
+
+        <!-- Fecha de Publicación -->
+        <div>
+          <label for="fecha_publicacion" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Publicación <span class="text-red-500">*</span></label>
+          <input 
+            id="fecha_publicacion" 
+            type="date" 
+            formControlName="fecha_publicacion" 
+            class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 appearance-none transition duration-150"
+          />
+          <p *ngIf="isFieldInvalid('fecha_publicacion')" class="mt-1 text-xs text-red-600">La fecha de publicación es obligatoria.</p>
+        </div>
+
+        <!-- Copias Totales -->
+        <div>
+          <label for="copias_totales" class="block text-sm font-medium text-gray-700 mb-1">Número de Copias Totales <span class="text-red-500">*</span></label>
+          <input 
+            id="copias_totales" 
+            type="number" 
+            formControlName="copias_totales" 
+            min="1"
+            class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+          />
+          <p *ngIf="isFieldInvalid('copias_totales')" class="mt-1 text-xs text-red-600">Debe ser al menos 1 copia.</p>
+        </div>
+        
+      </div>
+
+      <!-- URL de Imagen (1 Columna, ancho completo) -->
+      <div class="md:col-span-2">
+        <label for="imagen_url" class="block text-sm font-medium text-gray-700 mb-1">URL de Imagen de Portada (Opcional)</label>
+        <input 
+          id="imagen_url" 
+          type="url" 
+          formControlName="imagen_url" 
+          placeholder="https://ejemplo.com/portada-del-libro.jpg"
+          class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+        />
+        <!-- No necesita mensaje de error si es opcional y no tiene validación de formato compleja aquí -->
+      </div>
+      
+      <!-- Botón de Envío -->
+      <div class="pt-4 flex justify-end">
+        <button 
+          type="submit" 
+          [disabled]="libroForm.invalid || isLoading"
+          class="w-full md:w-auto px-6 py-3 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white transition duration-150 ease-in-out 
+                 bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
+                 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        >
+          <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ isLoading ? 'Registrando...' : 'Registrar Libro' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

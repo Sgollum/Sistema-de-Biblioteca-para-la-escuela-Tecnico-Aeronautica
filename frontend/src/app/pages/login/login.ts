@@ -15,13 +15,19 @@ import { LoginCredentials } from '../../core/models/auth.model';
     <!-- Fondo con imagen + overlay + blur -->
     <div class="login-background"></div>
 
+    <!-- 🔵 Botón pequeño para volver al Landing -->
+    <a routerLink="/"
+       class="absolute top-4 left-4 bg-white/80 backdrop-blur-md text-[#1F364D]
+              px-4 py-2 rounded-lg shadow-md hover:bg-white transition font-semibold">
+      ⬅ Volver
+    </a>
+
     <div class="flex items-center justify-center min-h-screen p-4">
       <div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-xl shadow-2xl p-8">
 
         <h2 class="text-3xl font-extrabold text-center text-primary-custom mb-6">
-        Iniciar Sesión
+          Iniciar Sesión
         </h2>
-
 
         <form (ngSubmit)="onSubmit(loginForm.valid)"
               #loginForm="ngForm"
@@ -69,11 +75,10 @@ import { LoginCredentials } from '../../core/models/auth.model';
             type="submit"
             [disabled]="!loginForm.valid || isLoading"
             class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md
-                  text-base font-medium text-white 
-                  bg-[#1F364D] hover:bg-[#172836] 
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1F364D]
-                  disabled:opacity-50 transition duration-300"
-            >
+                   text-base font-medium text-white 
+                   bg-[#1F364D] hover:bg-[#172836] 
+                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1F364D]
+                   disabled:opacity-50 transition duration-300">
 
             @if (isLoading) {
               Cargando...
@@ -81,30 +86,16 @@ import { LoginCredentials } from '../../core/models/auth.model';
               Iniciar Sesión
             }
           </button>
+
         </form>
-
-        <!-- SE ELIMINÓ ESTE BLOQUE
-        <div class="mt-6 text-center">
-          <p class="text-sm text-gray-600">
-            ¿No tienes una cuenta?
-            <a
-              [routerLink]="['/register']"
-              class="font-medium text-indigo-600 hover:text-indigo-500 cursor-pointer"
-            >
-              Regístrate aquí
-            </a>
-          </p>
-        </div>
-        -->
-
       </div>
     </div>
   `,
   styles: [
     `
       .text-primary-custom {
-  color: #1F364D !important;
-}
+        color: #1F364D !important;
+      }
 
       .login-background {
         position: fixed;
@@ -113,7 +104,7 @@ import { LoginCredentials } from '../../core/models/auth.model';
         height: 100%;
         background:
           linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-          url('https://wallpapers.com/images/hd/library-background-j511zvk12mbkip3l.jpg');
+          url('https://wallpapers.com/images/hd/library-background-bdpbrit7uip76ztq.jpg');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -147,7 +138,7 @@ export class LoginComponent {
         const role = this.authService.getCurrentUserRole();
         this.isLoading = false;
 
-        // Navegación basada en el rol
+        // Navegación según rol
         switch (role) {
           case this.authService.Roles.ADMIN:
             this.router.navigate(['/admin-dashboard']);

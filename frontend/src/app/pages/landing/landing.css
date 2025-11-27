@@ -1,322 +1,205 @@
-/* ----- VARIABLES ----- */
-:root {
-    --primary-color: #003366; /* Azul DGAC institucional */
-    --secondary-color: #f4f6f9; /* Fondo claro suave */
-    --accent-color: #ffcc00; /* Amarillo DGAC */
-    --text-color: #2c3e50;
-    --light-text-color: #fff;
-    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.15);
-    --hero-height: 55vh;
-}
-
-/* ----- CONTENEDOR GENERAL ----- */
+/* -------- CONTENEDOR GENERAL -------- */
 .landing-container {
     font-family: 'Segoe UI', sans-serif;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
+    color: #1a1a1a;
 }
 
-/* ----- HERO ----- */
+/* -------- HERO -------- */
 .hero {
     position: relative;
-    height: var(--hero-height);
-    background: url('https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1350&q=80')
-        center/cover no-repeat;
+    height: 55vh;
+    background: url('https://www.dts.cl/wp-content/uploads/2023/06/Control-de-Calidad-DGAC-fiscaliza-CMA-de-DTS-header.jpg')
+        center top no-repeat;
+    background-size: contain; /* <-- evita estiramiento */
+    background-attachment: fixed; /* <-- parallax */
+    background-color: #0D4F84; /* color institucional detrás de la imagen */
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: var(--shadow-light);
 }
+
 
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 45, 90, 0.55);
 }
 
 .hero-content {
     position: relative;
-    z-index: 2;
     text-align: center;
-    color: var(--light-text-color);
+    color: white;
+    padding: 20px;
     max-width: 700px;
 }
 
-.hero h1 {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-
-.hero p {
-    font-size: 1.2rem;
-    opacity: 0.95;
-}
-
-/* Botón del Hero */
-.hero-btn {
-    margin-top: 20px;
-    padding: 12px 30px;
-    background-color: var(--accent-color);
-    color: var(--primary-color);
-    border: none;
-    border-radius: 6px;
+.hero-content h1 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
     font-weight: bold;
+}
+
+.hero-content p {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    margin: 15px 0;
+}
+
+.hero-btn {
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    background: #1E3147;
+    color: white;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: 0.3s;
 }
 
 .hero-btn:hover {
+    background: #1E3147;
     transform: scale(1.05);
 }
 
-/* ----- SECCIÓN DE SERVICIOS ----- */
+/* -------- INFO SECTION -------- */
 .info-section {
-    padding: 50px 20px;
-    max-width: 1200px;
-    margin: auto;
+    padding: 70px 8%;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.section-img {
+    width: 100%;
+    max-width: 450px;
+    height: 280px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    background-color: #dfe6ed;
+}
+
+.text-block {
+    flex: 1;
 }
 
 .info-section h2 {
-    text-align: center;
-    font-size: 2.4rem;
-    color: var(--primary-color);
-    margin-bottom: 30px;
-    position: relative;
+    font-size: 2rem;
+    color: #003366;
 }
 
-.info-section h2::after {
-    content: '';
-    width: 60px;
-    height: 4px;
-    background-color: var(--accent-color);
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
+.info-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* -------- SERVICIO CARDS -------- */
+.services-section {
+    padding: 70px 8%;
+    text-align: center;
+}
+
+.services-section h2 {
+    font-size: 2rem;
+    color: #003366;
+    margin-bottom: 30px;
 }
 
 .service-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
 }
 
 .card {
+    width: 300px;
     background: white;
-    padding: 30px;
     border-radius: 12px;
-    box-shadow: var(--shadow-light);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
     transition: 0.3s;
-    text-align: center;
 }
 
 .card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-hover);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
-.card .icon {
-    font-size: 3rem;
+.card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-bottom: 1px solid #e5e5e5;
+    background-color: #dfe6ed;
+}
+
+.card h3 {
+    margin: 15px 0 5px;
+    font-size: 1.3rem;
+    color: #003366;
+}
+
+.card p {
+    padding: 0 15px 20px;
+}
+
+/* -------- CTA -------- */
+.call-to-action {
+    text-align: center;
+    padding: 60px 10%;
+}
+
+.call-to-action p {
+    font-size: 1.3rem;
     margin-bottom: 15px;
 }
 
-/* ----- CTA FINAL ----- */
-.call-to-action {
-    background-color: var(--accent-color);
-    text-align: center;
-    padding: 40px 20px;
-    margin-top: 40px;
-}
-
 .call-to-action button {
-    background: var(--primary-color);
+    padding: 14px 32px;
+    background: #1E3147;
     color: white;
     border: none;
-    padding: 12px 30px;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: 0.2s;
 }
 
 .call-to-action button:hover {
-    background: #002244;
+    background: #1E3147;
     transform: scale(1.05);
 }
 
-/* ----- FOOTER ----- */
+/* -------- FOOTER -------- */
 footer {
-    background-color: var(--primary-color);
-    color: var(--light-text-color);
     text-align: center;
-    padding: 20px 0;
-    margin-top: 0;
+    padding: 20px;
+    background: #1E3147;
+    color: white;
+    font-size: 0.95rem;
 }
 
-/* ----- RESPONSIVE ----- */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2.3rem;
+/* -------- ANIMACIONES -------- */
+.fade-in {
+    animation: fadeIn 1s ease forwards;
+    opacity: 0;
+}
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* -------- RESPONSIVE -------- */
+@media (max-width: 900px) {
+    .info-section {
+        flex-direction: column;
+        text-align: center;
     }
 }
-/* ----- VARIABLES ----- */
-:root {
-    --primary-color: #003366; /* Azul DGAC institucional */
-    --secondary-color: #f4f6f9; /* Fondo claro suave */
-    --accent-color: #ffcc00; /* Amarillo DGAC */
-    --text-color: #2c3e50;
-    --light-text-color: #fff;
-    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.15);
-    --hero-height: 55vh;
-}
 
-/* ----- CONTENEDOR GENERAL ----- */
-.landing-container {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-}
-
-/* ----- HERO ----- */
-.hero {
-    position: relative;
-    height: var(--hero-height);
-    background: url('https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1350&q=80')
-        center/cover no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: var(--shadow-light);
-}
-
-.hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    color: var(--light-text-color);
-    max-width: 700px;
-}
-
-.hero h1 {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-
-.hero p {
-    font-size: 1.2rem;
-    opacity: 0.95;
-}
-
-/* Botón del Hero */
-.hero-btn {
-    margin-top: 20px;
-    padding: 12px 30px;
-    background-color: var(--accent-color);
-    color: var(--primary-color);
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.hero-btn:hover {
-    transform: scale(1.05);
-}
-
-/* ----- SECCIÓN DE SERVICIOS ----- */
-.info-section {
-    padding: 50px 20px;
-    max-width: 1200px;
-    margin: auto;
-}
-
-.info-section h2 {
-    text-align: center;
-    font-size: 2.4rem;
-    color: var(--primary-color);
-    margin-bottom: 30px;
-    position: relative;
-}
-
-.info-section h2::after {
-    content: '';
-    width: 60px;
-    height: 4px;
-    background-color: var(--accent-color);
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.service-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-}
-
-.card {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: var(--shadow-light);
-    transition: 0.3s;
-    text-align: center;
-}
-
-.card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-hover);
-}
-
-.card .icon {
-    font-size: 3rem;
-    margin-bottom: 15px;
-}
-
-/* ----- CTA FINAL ----- */
-.call-to-action {
-    background-color: var(--accent-color);
-    text-align: center;
-    padding: 40px 20px;
-    margin-top: 40px;
-}
-
-.call-to-action button {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.call-to-action button:hover {
-    background: #002244;
-    transform: scale(1.05);
-}
-
-/* ----- FOOTER ----- */
-footer {
-    background-color: var(--primary-color);
-    color: var(--light-text-color);
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 0;
-}
-
-.hero-content h1,
-.hero-content p {
-    color: white;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+@media (max-width: 600px) {
+    .card {
+        width: 95%;
+    }
+    .hero {
+        height: 55vh;
+    }
 }
 

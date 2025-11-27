@@ -7,7 +7,7 @@ import { LandingComponent } from './pages/landing/landing';
 import { LoginComponent } from './pages/login/login';
 import { RegisterComponent } from './pages/register/register';
 import { HomeComponent } from './pages/home/home';
-import { LibroForm } from './pages/libro-form/libro-form';
+import { LibroFormComponent } from './pages/libro-form/libro-form';
 import { Layout } from './shared/layout/layout';
 import { LectorDashboardComponent } from './pages/lector-dashboard/lector-dashboard';
 import { BibliotecarioDashboardComponent } from './pages/bibliotecario-dashboard/bibliotecario-dashboard';
@@ -27,7 +27,7 @@ import { UsuarioForm } from './pages/usuario-form/usuario-form';
     LoginComponent,
     RegisterComponent,
     HomeComponent,
-    LibroForm,
+    LibroFormComponent,
     Layout, 
     LectorDashboardComponent,
     BibliotecarioDashboardComponent,

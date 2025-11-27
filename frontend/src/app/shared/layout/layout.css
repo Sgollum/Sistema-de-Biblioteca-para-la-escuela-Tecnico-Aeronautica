@@ -1,0 +1,91 @@
+/* ------------------------------------------------------------- */
+/* 🌄 FONDO DE TODA LA APLICACIÓN                                */
+/* ------------------------------------------------------------- */
+
+body {
+    background: url("https://i.pinimg.com/736x/20/8c/22/208c228d68bc553a1e4b6301e8d539b2.jpg")
+        center/cover no-repeat fixed !important;
+    background-attachment: fixed;
+    font-family: 'Inter', sans-serif;
+}
+
+/* OPCIONAL: Blur + oscurecimiento (queda más pro) */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("https://i.pinimg.com/736x/20/8c/22/208c228d68bc553a1e4b6301e8d539b2.jpg")
+        center/cover no-repeat;
+    filter: blur(10px) brightness(0.65);   
+    transform: scale(1.08);
+    z-index: -1;
+}
+
+/* ------------------------------------------------------------- */
+/* 🟦 NAVBAR                                                     */
+/* ------------------------------------------------------------- */
+
+.navbar {
+    background: #1C3550; /* Azul DGAC transparente */
+    backdrop-filter: blur(6px);
+}
+
+.nav-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.nav-btn:hover {
+    background: #4d6ba3;
+}
+
+.btn-biblio {
+    background: #4d6ba3;
+    color: #ffffff;
+    padding: 6px 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.btn-biblio:hover {
+    background: #4d6ba3;
+}
+
+.btn-admin {
+    background: #4d6ba3;
+    color: white;
+    padding: 6px 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.btn-admin:hover {
+    background: #4d6ba3;
+}
+
+.btn-logout {
+    border: 1px solid white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.btn-logout:hover {
+    background: white;
+    color: #1f2937;
+}
+
+/* ------------------------------------------------------------- */
+/* ⚫ FOOTER                                                     */
+/* ------------------------------------------------------------- */
+
+.footer {
+    background: #1C3550;
+    color: #d1d5db;
+    text-align: center;
+    padding: 14px 0;
+    backdrop-filter: blur(4px);
+}

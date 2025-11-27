@@ -3,7 +3,7 @@ import { LandingComponent } from './pages/landing/landing';
 import { LoginComponent } from './pages/login/login';
 import { HomeComponent } from './pages/home/home'; 
 import { RegisterComponent } from './pages/register/register'; 
-import { LibroForm } from './pages/libro-form/libro-form'; 
+import { LibroFormComponent } from './pages/libro-form/libro-form'; 
 // Importaciones de Dashboards
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard';
 import { BibliotecarioDashboardComponent } from './pages/bibliotecario-dashboard/bibliotecario-dashboard';
@@ -94,12 +94,12 @@ export const routes: Routes = [
             // Gestión de Libros (CRUD)
             {
                 path: 'crear-libro',
-                component: LibroForm,
+                component: LibroFormComponent,
                 title: 'Crear Nuevo Libro'
             },
             {
                 path: 'editar-libro/:id', // Con el ID dinámico
-                component: LibroForm,
+                component: LibroFormComponent,
                 title: 'Editar Libro'
             },
         ]

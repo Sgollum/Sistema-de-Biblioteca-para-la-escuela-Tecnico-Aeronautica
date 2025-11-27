@@ -1,63 +1,61 @@
-<!-- RUTA DEL ARCHIVO: frontend/src/app/shared/layout/layout.html -->
-<div class="min-h-screen bg-gray-100 flex flex-col">
-    
+<!-- RUTA: frontend/src/app/shared/layout/layout.html -->
+
+<div class="min-h-screen flex flex-col">
+
     <!-- Barra de Navegación -->
-    <nav class="bg-[#1F364D] text-white shadow-lg">
-    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-        
-        <!-- Logo / Título -->
-        <div class="text-xl font-bold tracking-wide cursor-pointer" routerLink="/dashboard">
-            📚 Mi Biblioteca DGAC
-        </div>
-
-        <!-- Menú de Navegación -->
-        <div class="flex items-center space-x-4">
+    <nav class="navbar text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             
-            <!-- 1. Botón Catálogo (Visible para TODOS) -->
-            <a routerLink="/dashboard" 
-               class="hover:bg-[#172836] px-3 py-2 rounded transition duration-200">
-               Catálogo
-            </a>
+            <!-- Logo / Título -->
+            <div class="flex items-center space-x-3 text-xl font-bold tracking-wide cursor-pointer" routerLink="/dashboard">
+    <img 
+        src="https://www.dgac.gob.cl/wp-content/themes/dgac-trabajo/img/logov2.png" 
+        alt="Logo DGAC"
+        class="h-10 w-auto"
+    >
+    <span>Mi Biblioteca DGAC</span>
+</div>
 
-            <!-- 2. Botón Mi Cuenta -->
-            <a routerLink="/lector-dashboard" 
-               class="hover:bg-[#172836] px-3 py-2 rounded transition duration-200">
-               Mi Cuenta
-            </a>
+            <!-- Menú -->
+            <div class="flex items-center space-x-4">
 
-            <!-- 3. Botón Panel Bibliotecario -->
-            @if (isBibliotecario || isAdmin) {
-                <a routerLink="/bibliotecario-dashboard" 
-                   class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded font-semibold shadow transition duration-200">
-                   Panel Biblio
+                <a routerLink="/dashboard" 
+                   class="nav-btn">
+                    Catálogo
                 </a>
-            }
 
-            <!-- 4. Botón Panel Admin -->
-            @if (isAdmin) {
-                <a routerLink="/admin-dashboard" 
-                   class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded font-semibold shadow transition duration-200">
-                   Panel Admin
+                <a routerLink="/lector-dashboard" 
+                   class="nav-btn">
+                    Mi Cuenta
                 </a>
-            }
 
-            <!-- Botón Cerrar Sesión -->
-            <button (click)="logout()" 
-                    class="border border-white hover:bg-white hover:text-[#1F364D] px-3 py-2 rounded transition duration-200 ml-4">
-                Cerrar Sesión
-            </button>
+                @if (isBibliotecario || isAdmin) {
+                    <a routerLink="/bibliotecario-dashboard" class="btn-biblio">
+                        Panel Biblio
+                    </a>
+                }
+
+                @if (isAdmin) {
+                    <a routerLink="/admin-dashboard" class="btn-admin">
+                        Panel Admin
+                    </a>
+                }
+
+                <button (click)="logout()" class="btn-logout">
+                    Cerrar Sesión
+                </button>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-
-    <!-- Contenido Principal (Aquí se cargan las páginas) -->
+    <!-- CONTENIDO -->
     <main class="flex-grow container mx-auto p-4">
         <router-outlet></router-outlet>
     </main>
 
-    <!-- Pie de página -->
-    <footer class="bg-gray-800 text-gray-400 text-center py-4 mt-auto">
+    <!-- FOOTER -->
+    <footer class="footer">
         <p>&copy; 2025 Sistema de Biblioteca DGAC</p>
     </footer>
+
 </div>
