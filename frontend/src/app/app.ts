@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http'; 
 import { FormsModule } from '@angular/forms'; 
+
+// Componentes de Ruta (Importaciones)
 import { LandingComponent } from './pages/landing/landing';
 import { LoginComponent } from './pages/login/login';
 import { RegisterComponent } from './pages/register/register';
@@ -15,32 +17,38 @@ import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard
 import { GestionUsuariosComponent } from './pages/gestion-usuarios/gestion-usuarios'; 
 import { UsuarioForm } from './pages/usuario-form/usuario-form'; 
 
+// --- NUEVA IMPORTACIÓN: Componente de Préstamos ---
+import { PrestamosComponent } from './pages/prestamos/prestamos'; 
+
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule, 
-    RouterOutlet, 
-    HttpClientModule, 
-    FormsModule, 
-    LandingComponent,
-    LoginComponent,
-    RegisterComponent,
-    HomeComponent,
-    LibroFormComponent,
-    Layout, 
-    LectorDashboardComponent,
-    BibliotecarioDashboardComponent,
-    AdminDashboardComponent,
-    GestionUsuariosComponent, 
-    UsuarioForm,     
-  ],
-  template: `
-    <!-- La directiva RouterOutlet se encarga de mostrar el componente de la ruta activa -->
-    <router-outlet></router-outlet>
-  `,
-  styleUrls: ['./app.css'],
+  selector: 'app-root',
+  standalone: true,
+  imports: [
+    CommonModule, 
+    RouterOutlet, 
+    HttpClientModule, 
+    FormsModule, 
+    
+    // Componentes de Ruta declarados aquí (siguiendo tu patrón)
+    LandingComponent,
+    LoginComponent,
+    RegisterComponent,
+    HomeComponent,
+    LibroFormComponent,
+    Layout, 
+    LectorDashboardComponent,
+    BibliotecarioDashboardComponent,
+    AdminDashboardComponent,
+    GestionUsuariosComponent, 
+    UsuarioForm,
+    PrestamosComponent, // <--- ¡AÑADIDO AQUÍ!
+  ],
+  template: `
+    <!-- La directiva RouterOutlet se encarga de mostrar el componente de la ruta activa -->
+    <router-outlet></router-outlet>
+  `,
+  styleUrls: ['./app.css'],
 })
 export class App {
-  title = 'Biblioteca Digital DGAC';
+  title = 'Biblioteca Digital DGAC';
 }

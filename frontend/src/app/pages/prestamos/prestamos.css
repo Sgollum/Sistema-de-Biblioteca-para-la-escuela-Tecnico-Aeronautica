@@ -1,0 +1,55 @@
+/* Estilos específicos para PrestamosComponent
+  Estos estilos complementan las clases de Tailwind CSS en prestamos.html.
+*/
+
+/* Efecto de sombra más pronunciado para los contenedores principales */
+.shadow-2xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Estilo para las listas de libros y préstamos */
+.list-container {
+  /* Añadir un desplazamiento suave cuando se alcanza el límite */
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar styling for a cleaner look (Webkit browsers) */
+.list-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.list-container::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* gray-300 */
+  border-radius: 4px;
+}
+
+.list-container::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8; /* gray-400 */
+}
+
+/* Estilo para las tarjetas de préstamos vencidos/activos */
+.loan-card-base {
+  transition: all 0.3s ease;
+}
+
+/* Efecto hover en las tarjetas de libros disponibles para prestar */
+.book-card-available:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+}
+
+/* Estilo para los botones principales de las acciones (Prestar/Devolver) */
+button {
+  transition: all 0.2s ease;
+}
+
+/* Mejorar el enfoque de los inputs */
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); /* Sombra de enfoque de indigo */
+}
+
+/* Estilo para el modal de fondo para asegurar que cubra todo */
+.modal-overlay {
+  background-color: rgba(15, 23, 42, 0.8); /* Slate-900 oscuro */
+}
