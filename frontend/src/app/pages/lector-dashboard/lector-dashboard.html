@@ -1,139 +1,158 @@
-<!-- Componente de Dashboard del Lector -->
-<div class="p-6 bg-gray-50 min-h-screen">
-  <div class="max-w-7xl mx-auto">
-    <h1 class="text-3xl font-extrabold text-gray-900 mb-6">Mi Biblioteca Personal</h1>
+<div class="lector-dashboard">
 
-    <!-- Pestañas de Navegación -->
-    <div class="mb-8 border-b border-gray-200">
-      <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-        <button (click)="tabActivo = 'prestamos'" [class.border-indigo-500]="tabActivo === 'prestamos'"
-          [class.text-indigo-600]="tabActivo === 'prestamos'"
-          [class.border-transparent]="tabActivo !== 'prestamos'"
-          [class.text-gray-500]="tabActivo !== 'prestamos'"
-          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150">
-          Préstamos Activos
-        </button>
-        <button (click)="tabActivo = 'historial'" [class.border-indigo-500]="tabActivo === 'historial'"
-          [class.text-indigo-600]="tabActivo === 'historial'"
-          [class.border-transparent]="tabActivo !== 'historial'"
-          [class.text-gray-500]="tabActivo !== 'historial'"
-          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-150">
-          Historial de Préstamos
-        </button>
-      </nav>
-    </div>
-
-    <!-- Contenido de la Pestaña de Préstamos Activos -->
-    <div *ngIf="tabActivo === 'prestamos'">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Mis Préstamos Activos (Fecha de hoy: {{ fechaHoy }})</h2>
-
-      <!-- Tarjetas de Resumen (Opcional, se puede añadir más adelante) -->
-      <!-- ... -->
-
-      <!-- Lista de Préstamos -->
-      <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="min-w-full divide-y divide-gray-200">
-          <div class="bg-gray-50">
-            <div class="grid grid-cols-6 gap-4 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-              <div class="col-span-2">Título del Libro</div>
-              <div>F. Préstamo</div>
-              <div>F. Vencimiento</div>
-              <div>Estado</div>
-              <div>Acciones</div>
-            </div>
-          </div>
-          <div class="bg-white divide-y divide-gray-200">
-            <!-- Uso de @for para iterar sobre los préstamos activos -->
-            @for (prestamo of prestamos; track prestamo.id) {
-              <div class="grid grid-cols-6 gap-4 px-6 py-4 text-sm text-gray-900 items-center border-b
-                  <!-- CRÍTICO: Uso de [ngClass] corregido para comparar strings de fecha -->
-                  " [ngClass]="{'bg-red-50': prestamo.fechaVencimiento < fechaHoy}">
-
-                <div class="col-span-2 font-medium">{{ prestamo.tituloLibro }}</div>
-
-                <!-- Fecha de Préstamo -->
-                <div>{{ prestamo.fechaPrestamo | date:'mediumDate' }}</div>
-
-                <!-- Fecha de Vencimiento y Marcador de Estado -->
-                <div>
-                  <span
-                    class="font-semibold
-                    <!-- CRÍTICO: Uso de [ngClass] corregido para marcar el texto en rojo si está vencido -->
-                    " [ngClass]="{'text-red-700': prestamo.fechaVencimiento < fechaHoy}">
-                    {{ prestamo.fechaVencimiento | date:'mediumDate' }}
-                  </span>
-                </div>
-
-                <!-- Indicador de Vencimiento -->
-                <div>
-                  <span *ngIf="prestamo.fechaVencimiento < fechaHoy"
-                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                    VENCIDO
-                  </span>
-                  <span *ngIf="prestamo.fechaVencimiento >= fechaHoy"
-                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    Activo
-                  </span>
-                </div>
-
-                <!-- Botones de Acción -->
-                <div class="flex space-x-2">
-                  <button (click)="devolverLibro(prestamo.id)"
-                    class="text-indigo-600 hover:text-indigo-900 text-xs font-medium">
-                    Devolver
-                  </button>
-                  <button *ngIf="prestamo.renovable" (click)="renovarPrestamo(prestamo.id)"
-                    class="text-green-600 hover:text-green-900 text-xs font-medium">
-                    Renovar
-                  </button>
-                </div>
-              </div>
-            }
-            @empty {
-              <div class="text-center py-10 text-gray-500">
-                <p>No tienes préstamos activos en este momento. ¡Busca un libro!</p>
-                <!-- Asumo una ruta para buscar libros -->
-                <a [routerLink]="['/home']" class="text-indigo-600 hover:underline mt-2 inline-block">
-                    Ir a la búsqueda
-                </a>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Contenido de la Pestaña de Historial de Préstamos -->
-    <div *ngIf="tabActivo === 'historial'">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Historial (Devueltos)</h2>
-      <!-- El formato de la tabla de historial es similar a la de activos, pero sin botones de acción y con indicación de estado 'Devuelto' -->
-      <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="min-w-full divide-y divide-gray-200">
-          <div class="bg-gray-50">
-            <div class="grid grid-cols-4 gap-4 px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-              <div class="col-span-2">Título del Libro</div>
-              <div>F. Préstamo</div>
-              <div>F. Devolución</div>
-            </div>
-          </div>
-          <div class="bg-white divide-y divide-gray-200">
-            <!-- Uso de @for para iterar sobre el historial -->
-            @for (item of historial; track item.id) {
-              <div class="grid grid-cols-4 gap-4 px-6 py-4 text-sm text-gray-500 items-center border-b">
-                <div class="col-span-2 font-medium text-gray-900">{{ item.tituloLibro }}</div>
-                <div>{{ item.fechaPrestamo | date:'mediumDate' }}</div>
-                <!-- Simulación de fecha de devolución -->
-                <div>{{ item.fechaVencimiento | date:'mediumDate' }}</div> 
-              </div>
-            }
-            @empty {
-              <div class="text-center py-10 text-gray-500">
-                <p>Tu historial de préstamos está vacío.</p>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="header">
+    <h1>📚 Mi Panel de Préstamos</h1>
+    <p class="subtitulo">
+      Revisa tus préstamos activos, fechas de vencimiento y tu historial.
+    </p>
   </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button 
+      class="tab-btn" 
+      [class.activo]="tabActivo === 'prestamos'"
+      (click)="cambiarTab('prestamos')">
+      Préstamos activos
+    </button>
+
+    <button 
+      class="tab-btn" 
+      [class.activo]="tabActivo === 'historial'"
+      (click)="cambiarTab('historial')">
+      Historial
+    </button>
+  </div>
+
+  <!-- Mensajes de estado -->
+  <div *ngIf="loading" class="estado-info">
+    Cargando información...
+  </div>
+
+  <div *ngIf="errorMessage" class="estado-error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- TAB: PRÉSTAMOS ACTIVOS -->
+  <div *ngIf="tabActivo === 'prestamos'">
+
+    <div *ngIf="!loading && prestamos.length === 0" class="estado-info">
+      No tienes préstamos activos por ahora.
+    </div>
+
+    <div class="prestamos-grid" *ngIf="prestamos.length > 0">
+      <div class="prestamo-card" *ngFor="let p of prestamos">
+
+        <div class="card-header">
+          <h2 class="titulo-libro">
+            {{ p.libro_titulo || ('Libro ' + p.libro_id) }}
+          </h2>
+
+          <span 
+            class="chip-estado"
+            [ngClass]="{
+              'estado-pendiente': p.estado === 'pendiente',
+              'estado-listo': p.estado === 'listo',
+              'estado-prestado': p.estado === 'prestado',
+              'estado-devuelto': p.estado === 'devuelto',
+              'estado-rechazado': p.estado === 'rechazado',
+              'estado-vencido': esVencido(p)
+            }">
+            <!-- Texto del estado -->
+            <ng-container *ngIf="!esVencido(p)">
+              {{ p.estado | titlecase }}
+            </ng-container>
+            <ng-container *ngIf="esVencido(p)">
+              Vencido
+            </ng-container>
+          </span>
+        </div>
+
+        <div class="card-body">
+          <p><strong>Fecha de préstamo:</strong> {{ p.fecha_prestamo | date:'yyyy-MM-dd' }}</p>
+          <p>
+            <strong>Fecha de vencimiento:</strong>
+            <span *ngIf="p.fecha_devolucion_esperada; else sinFecha">
+              {{ p.fecha_devolucion_esperada | date:'yyyy-MM-dd' }}
+            </span>
+            <ng-template #sinFecha>
+              No definida
+            </ng-template>
+          </p>
+
+          <p *ngIf="esVencido(p)" class="alerta-vencido">
+            ⚠ Este préstamo está vencido, acércate a la biblioteca.
+          </p>
+        </div>
+
+        <div class="card-actions">
+          <button 
+            class="btn-primario"
+            (click)="renovarPrestamo(p)"
+            [disabled]="!puedeRenovar(p)">
+            Renovar
+          </button>
+
+          <button 
+            class="btn-secundario"
+            (click)="devolverLibro(p)">
+            Marcar como devuelto
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAB: HISTORIAL -->
+  <div *ngIf="tabActivo === 'historial'">
+
+    <div *ngIf="historial.length === 0" class="estado-info">
+      Aún no tienes historial de préstamos.
+    </div>
+
+    <table *ngIf="historial.length > 0" class="tabla-historial">
+      <thead>
+        <tr>
+          <th>Libro</th>
+          <th>Fecha préstamo</th>
+          <th>Fecha devolución / resolución</th>
+          <th>Estado final</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of historial">
+          <td>{{ p.libro_titulo || ('Libro ' + p.libro_id) }}</td>
+          <td>{{ p.fecha_prestamo | date:'yyyy-MM-dd' }}</td>
+          <td>
+            <span *ngIf="p.fecha_devolucion_esperada; else sinFechaHist">
+              {{ p.fecha_devolucion_esperada | date:'yyyy-MM-dd' }}
+            </span>
+            <ng-template #sinFechaHist>
+              -
+            </ng-template>
+          </td>
+          <td>
+            <span class="chip-historial"
+                  [ngClass]="{
+                    'hist-devuelto': p.estado === 'devuelto',
+                    'hist-rechazado': p.estado === 'rechazado'
+                  }">
+              {{ p.estado | titlecase }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- CTA inferior -->
+  <div class="footer-cta">
+    <a routerLink="/dashboard" class="btn-ir-catalogo">
+      🔎 Ir al catálogo de libros
+    </a>
+  </div>
+
 </div>

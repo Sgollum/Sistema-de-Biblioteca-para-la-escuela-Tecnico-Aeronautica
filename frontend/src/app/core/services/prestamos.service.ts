@@ -12,7 +12,7 @@ export class PrestamosService {
 
   constructor(private http: HttpClient) {}
 
-  // 📌 ENVIAR SOLICITUD DE PRÉSTAMO
+  // 📌 ENVIAR SOLICITUD DE PRÉSTAMO (Catálogo)
   solicitarPrestamo(usuarioId: number, libroId: number): Observable<any> {
     return this.http.post(`${this.apiUrl}solicitar/`, {
       lector_id: usuarioId,
@@ -20,20 +20,31 @@ export class PrestamosService {
     });
   }
 
-  // 📌 OBTENER TODAS LAS SOLICITUDES (NO SOLO PENDIENTES)
+  // 📌 OBTENER TODAS LAS SOLICITUDES (Panel Bibliotecario)
   obtenerSolicitudes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}pendientes/`);
   }
 
-  // 📌 ACEPTAR PRÉSTAMO
+  // 📌 ACEPTAR PRÉSTAMO (Panel Bibliotecario)
   aceptarPrestamo(id: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}aceptar/${id}/`, {});
   }
 
-  // 📌 RECHAZAR PRÉSTAMO
+  // 📌 RECHAZAR PRÉSTAMO (Panel Bibliotecario)
   rechazarPrestamo(id: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}rechazar/${id}/`, {});
   }
+
+  // 🔹 NUEVO: PRÉSTAMOS ACTIVOS DEL LECTOR (Lector Dashboard)
+  obtenerPrestamosDelLector(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}mis-prestamos/`);
+  }
+
+  // 🔹 NUEVO: HISTORIAL DEL LECTOR (Lector Dashboard)
+  obtenerHistorialDelLector(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}mis-prestamos/historial/`);
+  }
 }
+
 
 

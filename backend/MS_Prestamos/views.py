@@ -18,7 +18,10 @@ class CrearPrestamoView(generics.CreateAPIView):
         if not lector_id or not libro_id:
             return Response({"error": "Datos incompletos"}, status=400)
 
-        libro = Libro.objects.get(id=libro_id)
+        try:
+            libro = Libro.objects.get(id=libro_id)
+        except Libro.DoesNotExist:
+            return Response({"error": "Libro no encontrado"}, status=404)
 
         if libro.copias_disponibles <= 0:
             return Response({"error": "Sin stock"}, status=400)
@@ -33,6 +36,10 @@ class CrearPrestamoView(generics.CreateAPIView):
 
 
 class ListaPendientesView(generics.ListAPIView):
+    """
+    Usada por el panel del bibliotecario.
+    Devuelve TODOS los préstamos (no solo pendientes), para poder sacar métricas.
+    """
     serializer_class = PrestamoSerializer
     permission_classes = [IsAuthenticated]
 
@@ -46,8 +53,15 @@ class AceptarPrestamoView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request, pk):
-        prestamo = Prestamo.objects.get(id=pk)
-        libro = Libro.objects.get(id=prestamo.libro_id)
+        try:
+            prestamo = Prestamo.objects.get(id=pk)
+        except Prestamo.DoesNotExist:
+            return Response({"error": "Préstamo no encontrado"}, status=404)
+
+        try:
+            libro = Libro.objects.get(id=prestamo.libro_id)
+        except Libro.DoesNotExist:
+            return Response({"error": "Libro no encontrado"}, status=404)
 
         if libro.copias_disponibles <= 0:
             return Response({"error": "Sin stock"}, status=400)
@@ -67,7 +81,51 @@ class RechazarPrestamoView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request, pk):
-        prestamo = Prestamo.objects.get(id=pk)
+        try:
+            prestamo = Prestamo.objects.get(id=pk)
+        except Prestamo.DoesNotExist:
+            return Response({"error": "Préstamo no encontrado"}, status=404)
+
         prestamo.estado = "rechazado"
         prestamo.save()
         return Response(PrestamoSerializer(prestamo).data)
+
+
+# 🔹 NUEVO: Préstamos activos del lector autenticado
+class MisPrestamosActivosView(generics.ListAPIView):
+    """
+    Devuelve los préstamos activos del usuario logueado:
+    - pendiente
+    - listo
+    - prestado
+    (esta_activo=True)
+    """
+    serializer_class = PrestamoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Prestamo.objects.filter(
+            lector_id=user.id,
+            estado__in=["pendiente", "listo", "prestado"],
+            esta_activo=True
+        ).order_by('-fecha_prestamo')
+
+
+# 🔹 NUEVO: Historial del lector autenticado
+class HistorialPrestamosView(generics.ListAPIView):
+    """
+    Devuelve el historial del usuario logueado:
+    - devuelto
+    - rechazado
+    o registros marcados como inactivos.
+    """
+    serializer_class = PrestamoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Prestamo.objects.filter(
+            lector_id=user.id,
+            estado__in=["devuelto", "rechazado"]
+        ).order_by('-fecha_prestamo')
