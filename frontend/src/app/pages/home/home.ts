@@ -2,11 +2,12 @@ import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http'; // Importamos para manejo de errores
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { Libro } from '../../core/models/libro.model';
 import { CatalogoService } from '../../core/services/catalogo';
 import { AuthService } from '../../core/services/auth.service';
+import { PrestamosService } from '../../core/services/prestamos.service';
 
 @Component({
     selector: 'app-home',
@@ -22,21 +23,43 @@ export class HomeComponent implements OnInit {
     searchQuery: string = '';
     totalLibros: number = 0;
     currentRole: string | null = null;
-    
-    // ⭐ Variables de estado añadidas
+
+    // Estado UI
     isLoading: boolean = false;
     errorMessage: string | null = null;
-    
+
+    // Datos del usuario autenticado
+    userId: number | null = null;
+
+    // Services
     private catalogoService = inject(CatalogoService);
     private authService = inject(AuthService);
+    private prestamosService = inject(PrestamosService);
 
     ngOnInit(): void {
         this.currentRole = this.authService.getCurrentUserRole();
+        this.obtenerUsuarioActual();
         this.cargarLibros();
     }
 
     /**
-     * Carga todos los libros o, si hay un query, realiza una búsqueda.
+     * Obtiene el ID real del usuario desde /api/usuarios/me/
+     */
+    obtenerUsuarioActual(): void {
+        this.authService.fetchUserInfo().subscribe({
+            next: (data: any) => {
+                // Debe contener { id, username, rol }
+                this.userId = data.id;
+            },
+            error: () => {
+                console.warn("No se pudo obtener el usuario actual");
+                this.userId = null;
+            }
+        });
+    }
+
+    /**
+     * Carga todos los libros.
      */
     cargarLibros(): void {
         this.isLoading = true;
@@ -50,9 +73,9 @@ export class HomeComponent implements OnInit {
             },
             error: (err: HttpErrorResponse) => {
                 this.isLoading = false;
-                this.errorMessage = `Error ${err.status}: No se pudo cargar el catálogo. Mostrando datos de prueba.`;
+                this.errorMessage = `Error ${err.status}: No se pudo cargar el catálogo.`;
                 console.error('Error al cargar libros:', err);
-                // Usar datos de prueba en caso de fallo de API
+
                 this.libros = this.getMockLibros();
                 this.totalLibros = this.libros.length;
             }
@@ -60,16 +83,16 @@ export class HomeComponent implements OnInit {
     }
 
     /**
-     * Maneja la acción de búsqueda.
+     * Búsqueda de libros
      */
     buscarLibros(): void {
         const query = this.searchQuery.trim().toLowerCase();
-        
+
         if (!query) {
             this.cargarLibros();
             return;
         }
-        
+
         this.isLoading = true;
         this.errorMessage = null;
 
@@ -81,7 +104,7 @@ export class HomeComponent implements OnInit {
             },
             error: (err: HttpErrorResponse) => {
                 this.isLoading = false;
-                this.libros = []; // Limpiar lista al haber error de búsqueda
+                this.libros = [];
                 this.totalLibros = 0;
                 this.errorMessage = `Error ${err.status}: Fallo al ejecutar la búsqueda.`;
                 console.error('Error al buscar libros:', err);
@@ -90,21 +113,45 @@ export class HomeComponent implements OnInit {
     }
 
     onSearchChange(): void {
-      if (!this.searchQuery) {
-        this.cargarLibros();
-      }
+        if (!this.searchQuery) {
+            this.cargarLibros();
+        }
     }
-    
+
+    /**
+     * ⭐⭐⭐ Solicitar préstamo
+     */
+    solicitarPrestamo(libro: Libro): void {
+        if (!this.userId) {
+            alert("Debes iniciar sesión para solicitar un préstamo.");
+            return;
+        }
+
+        this.prestamosService.solicitarPrestamo(this.userId, libro.id).subscribe({
+            next: () => {
+                alert(`Solicitud enviada para el libro: ${libro.titulo}`);
+            },
+            error: (err) => {
+                console.error("Error al solicitar préstamo:", err);
+
+                if (err.error?.error === "No hay stock") {
+                    alert("No hay copias disponibles.");
+                } else {
+                    alert("Error al enviar la solicitud.");
+                }
+            }
+        });
+    }
+
     eliminarLibro(libroId: number): void {
-        // Usar un modal o un mensaje de confirmación en lugar de alert/confirm si fuera un entorno de producción
         if (!confirm('¿Está seguro de eliminar este libro del catálogo?')) {
             return;
         }
 
         this.catalogoService.eliminarLibro(libroId).subscribe({
             next: () => {
-                alert('Libro eliminado exitosamente.'); // Se mantiene 'alert' por convención de entorno
-                this.cargarLibros(); 
+                alert('Libro eliminado exitosamente.');
+                this.cargarLibros();
             },
             error: (err: HttpErrorResponse) => {
                 console.error('Error al eliminar libro:', err);
@@ -113,14 +160,11 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    // ⭐⭐⭐ FALLBACK PARA IMÁGENES
+    // Fallback de imagen
     onImageError(event: any): void {
         event.target.src = 'https://placehold.co/400x600/CCCCCC/333333?text=No+Cover';
     }
-    
-    /**
-     * Datos de prueba para simular fallos de API.
-     */
+
     private getMockLibros(): Libro[] {
         return [
             {
@@ -130,8 +174,6 @@ export class HomeComponent implements OnInit {
                 categoria_nombre: 'Ficción',
                 isbn: '978-0307474771',
                 copias_disponibles: 5,
-                
-                
                 imagen_url: 'https://images.placeholders.dev/cdn-cgi/image/width=150,height=250/placeholder.jpg'
             },
             {
@@ -141,9 +183,7 @@ export class HomeComponent implements OnInit {
                 categoria_nombre: 'Clásico',
                 isbn: '978-8424117865',
                 copias_disponibles: 0,
-                
-                
-                imagen_url: 'URL_INCORRECTA_QUE_FALLARA_PARA_PROBAR_EL_ERROR' // Fallback se activará aquí
+                imagen_url: 'URL_INCORRECTA_QUE_FALLARA_PARA_PROBAR_EL_ERROR'
             },
             {
                 id: 3,
@@ -152,12 +192,8 @@ export class HomeComponent implements OnInit {
                 categoria_nombre: 'Ciencia Ficción',
                 isbn: '978-8445075191',
                 copias_disponibles: 12,
-                
-                
                 imagen_url: 'https://placehold.co/400x600/000000/FFFFFF?text=FOUNDATION'
             }
         ];
     }
 }
-
-

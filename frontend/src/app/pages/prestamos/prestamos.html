@@ -1,165 +1,269 @@
-<div class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-  
-  <!-- Encabezado y Navegación -->
+<!-- Encabezado y Navegación -->
+<div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-extrabold text-indigo-800">Gestión de Préstamos</h1>
-    <button (click)="goBack()"
-            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300 transition duration-150">
-      ← Volver al Panel
+    <h1 class="text-3xl font-bold text-gray-800">
+      <i class="fa-solid fa-handshake mr-2 text-indigo-600"></i>Gestión de Préstamos
+    </h1>
+    <button
+      (click)="goBack()"
+      class="px-4 py-2 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 transition duration-150 ease-in-out"
+    >
+      <i class="fa-solid fa-arrow-left mr-2"></i>Volver al Panel
     </button>
   </div>
 
-  <!-- Mensajes de Estado (Éxito/Error) -->
-  @if (statusMessage()) {
-    <div [ngClass]="{'bg-green-100 border-green-400 text-green-700': statusType() === 'success', 'bg-red-100 border-red-400 text-red-700': statusType() === 'error'}"
-         class="border-l-4 p-4 mb-6 rounded-lg shadow-md" role="alert">
-      <p class="font-bold">{{ statusType() === 'success' ? 'Éxito' : 'Error' }}</p>
-      <p>{{ statusMessage() }}</p>
-    </div>
-  }
-
-  <!-- Spinner de Carga -->
-  @if (isLoading()) {
-    <div class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
-    </div>
-  }
-
-  <!-- Pestañas de Navegación -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    
-    <!-- Sección 1: Registrar Nuevo Préstamo -->
-    <div class="bg-white p-6 rounded-xl shadow-2xl border-t-4 border-indigo-600">
-      <h2 class="text-2xl font-semibold text-indigo-700 mb-4">1. Prestar Libros Disponibles</h2>
-      
-      <!-- Barra de Búsqueda -->
-      <div class="mb-4 flex space-x-2">
-        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="filterBooks()"
-               placeholder="Buscar por Título, Autor o ISBN..."
-               class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-        <button (click)="filterBooks()"
-                class="p-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-150">
-          Buscar
-        </button>
-      </div>
-
-      <!-- Lista de Libros Filtrados y Disponibles -->
-      <div class="space-y-3 max-h-96 overflow-y-auto pr-2">
-        @for (libro of filteredBooks(); track libro.id) {
-          <div class="flex justify-between items-center p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
-            <div>
-              <p class="font-bold text-gray-800">{{ libro.titulo }}</p>
-              <!-- Usamos autor_nombre -->
-              <p class="text-sm text-gray-500">{{ libro.autor_nombre }} (ISBN: {{ libro.isbn }})</p>
-              <!-- Usamos copias_disponibles -->
-              <p class="text-xs font-medium text-green-600">Disponibles: {{ libro.copias_disponibles }}</p>
-            </div>
-            <button (click)="openLoanModal(libro)"
-                    [disabled]="libro.copias_disponibles <= 0"
-                    class="px-3 py-1 bg-indigo-500 text-white text-sm font-medium rounded-full hover:bg-indigo-600 transition duration-150 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-md">
-              Prestar
-            </button>
-          </div>
-        } @empty {
-          <p class="text-center text-gray-500 p-10 bg-gray-50 rounded-lg">No se encontraron libros disponibles que coincidan con la búsqueda.</p>
-        }
-      </div>
-    </div>
-    
-    <!-- Sección 2: Devoluciones Pendientes -->
-    <div class="bg-white p-6 rounded-xl shadow-2xl border-t-4 border-red-600">
-      <h2 class="text-2xl font-semibold text-red-700 mb-4">2. Devoluciones Pendientes</h2>
-      
-      <!-- Lista de Préstamos Activos -->
-      <div class="space-y-3 max-h-96 overflow-y-auto pr-2">
-        @for (prestamo of activeLoans(); track prestamo.id) {
-          <div [ngClass]="{'border-red-500 bg-red-50': isOverdue(prestamo.fecha_devolucion_limite), 'border-yellow-400 bg-yellow-50': !isOverdue(prestamo.fecha_devolucion_limite)}"
-               class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border-l-4 rounded-lg shadow-sm">
-            <div class="mb-2 sm:mb-0">
-              <p class="font-bold text-gray-800">{{ prestamo.libro.titulo }}</p>
-              <p class="text-sm text-gray-600">Prestatario: {{ prestamo.usuario.nombre }} (ID: {{ prestamo.usuario.identificador }})</p>
-              <p class="text-xs font-medium" 
-                 [ngClass]="{'text-red-700': isOverdue(prestamo.fecha_devolucion_limite), 'text-gray-500': !isOverdue(prestamo.fecha_devolucion_limite)}">
-                Límite: {{ prestamo.fecha_devolucion_limite | date: 'dd/MM/yyyy' }} 
-                @if (isOverdue(prestamo.fecha_devolucion_limite)) {
-                  <span class="font-bold ml-1">(¡VENCIDO!)</span>
-                }
-              </p>
-            </div>
-            <button (click)="openReturnModal(prestamo)"
-                    class="px-3 py-1 bg-red-600 text-white text-sm font-medium rounded-full hover:bg-red-700 transition duration-150 shadow-md">
-              Confirmar Devolución
-            </button>
-          </div>
-        } @empty {
-          <p class="text-center text-gray-500 p-10 bg-gray-50 rounded-lg">No hay préstamos activos registrados.</p>
-        }
-      </div>
-    </div>
+  <!-- Notificaciones y Loader -->
+  <div *ngIf="successMessage()" class="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg transition-opacity duration-300">
+    <i class="fa-solid fa-circle-check mr-2"></i>{{ successMessage() }}
   </div>
 
-  <!-- MODAL DE REGISTRO DE PRÉSTAMO -->
-  @if (isLoanModalOpen()) {
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" (click)="closeLoanModal()">
-      <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold text-indigo-700 mb-4">Registrar Préstamo</h3>
-        @if (selectedBook()) {
-          <p class="mb-4 text-lg font-medium">Libro: <span class="text-indigo-600">{{ selectedBook()!.titulo }}</span></p>
-        }
-        
-        <form (ngSubmit)="registerLoan()" class="space-y-4">
-          <div>
-            <label for="identificador" class="block text-sm font-medium text-gray-700">ID/Identificador del Lector:</label>
-            <input id="identificador" type="text" [(ngModel)]="loanUserData.identificador" name="identificador" required
-                   class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-          </div>
-          
-          <div>
-            <label for="fechaLimite" class="block text-sm font-medium text-gray-700">Fecha Límite de Devolución:</label>
-            <input id="fechaLimite" type="date" [(ngModel)]="loanUserData.fechaLimite" name="fechaLimite" [min]="todayDate" required
-                   class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-          </div>
-          
-          <div class="flex justify-end space-x-3 pt-4">
-            <button type="button" (click)="closeLoanModal()"
-                    class="px-5 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
-              Cancelar
-            </button>
-            <button type="submit"
-                    class="px-5 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition duration-150 shadow-lg">
-              Confirmar Préstamo
-            </button>
-          </div>
-        </form>
+  <div *ngIf="errorMessage()" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg transition-opacity duration-300">
+    <i class="fa-solid fa-triangle-exclamation mr-2"></i>{{ errorMessage() }}
+  </div>
+
+  <div *ngIf="isLoading()" class="flex justify-center items-center p-8">
+    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+    <span class="ml-3 text-lg text-gray-600">Cargando datos...</span>
+  </div>
+
+  <div *ngIf="!isLoading()">
+    <!-- 1. Préstamos Activos (Devoluciones) -->
+    <section class="mb-10 p-6 bg-white rounded-xl shadow-lg">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center">
+        <i class="fa-solid fa-clock-rotate-left mr-3 text-red-500"></i>
+        Préstamos Activos (Pendientes de Devolución)
+        <!-- **CORRECCIÓN 1: Usar la señal computada isAnyLoanOverdue** -->
+        <span *ngIf="isAnyLoanOverdue()" class="text-sm font-normal text-red-600 ml-3 bg-red-100 px-3 py-1 rounded-full border border-red-300">
+          <i class="fa-solid fa-circle-exclamation mr-1"></i> ¡Hay Préstamos Vencidos!
+        </span>
+      </h2>
+
+      <!-- Tabla de Préstamos Activos -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Libro
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Usuario ID
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Fecha Préstamo
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Devolución Límite
+              </th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let loan of activeLoans()">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {{ loan.libro.titulo }} <span class="text-xs text-gray-500">({{ loan.libro.isbn }})</span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ loan.usuario_identificador }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ formatDate(loan.fecha_prestamo) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm"
+                  [ngClass]="{'text-red-600 font-bold bg-red-50': isOverdue(loan.fecha_devolucion_limite)}">
+                {{ formatDate(loan.fecha_devolucion_limite) }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button
+                  (click)="openReturnModal(loan)"
+                  class="text-indigo-600 hover:text-indigo-900 transition duration-150 ease-in-out font-medium"
+                >
+                  <i class="fa-solid fa-rotate-left mr-1"></i> Devolver
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="activeLoans().length === 0">
+              <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                No hay préstamos activos en este momento.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. Inventario (Préstamos) -->
+    <section class="p-6 bg-white rounded-xl shadow-lg">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center">
+        <i class="fa-solid fa-book-open-reader mr-3 text-green-500"></i>
+        Inventario Disponible para Préstamo
+      </h2>
+
+      <!-- Filtro de Búsqueda -->
+      <div class="mb-6">
+        <input
+          type="text"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          placeholder="Buscar por Título, Autor o ISBN..."
+          class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+        />
+      </div>
+
+      <!-- Tabla de Inventario -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Título
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Autor
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                ISBN
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Copias Disponibles
+              </th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let book of filteredBooks()">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {{ book.titulo }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ book.autor_nombre }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ book.isbn }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold"
+                  [ngClass]="{'text-green-600': book.copias_disponibles > 0, 'text-yellow-600': book.copias_disponibles === 0}">
+                {{ book.copias_disponibles }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button
+                  (click)="openLoanModal(book)"
+                  [disabled]="book.copias_disponibles <= 0"
+                  class="text-green-600 hover:text-green-800 transition duration-150 ease-in-out font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  <i class="fa-solid fa-arrow-up-from-bracket mr-1"></i> Prestar
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredBooks().length === 0">
+              <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                No se encontraron libros disponibles que coincidan con la búsqueda.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Modal de Registro de Préstamo -->
+<div *ngIf="showLoanModal()" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 transform transition-all duration-300 scale-100">
+    <div class="flex justify-between items-center mb-4 border-b pb-3">
+      <h3 class="text-xl font-bold text-indigo-600">Registrar Nuevo Préstamo</h3>
+      <button (click)="closeLoanModal()" class="text-gray-400 hover:text-gray-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <div *ngIf="selectedBook()" class="space-y-4">
+      <p class="text-lg font-semibold text-gray-800">Libro:</p>
+      <p class="text-sm text-gray-600 ml-2">Título: <span class="font-medium text-gray-900">{{ selectedBook()!.titulo }}</span></p>
+      <p class="text-sm text-gray-600 ml-2">Autor: <span class="font-medium text-gray-900">{{ selectedBook()!.autor_nombre }}</span></p>
+      <p class="text-sm text-gray-600 ml-2">Disponibles: <span class="font-medium text-green-600">{{ selectedBook()!.copias_disponibles }}</span></p>
+
+      <div class="pt-4 border-t">
+        <label for="user-id" class="block text-sm font-medium text-gray-700 mb-1">ID de Usuario (Identificador)</label>
+        <input
+          id="user-id"
+          type="text"
+          [(ngModel)]="loanDetails().usuario_identificador"
+          placeholder="Ej: u12345"
+          required
+          class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+
+      <div>
+        <label for="due-date" class="block text-sm font-medium text-gray-700 mb-1">Fecha Límite de Devolución</label>
+        <input
+          id="due-date"
+          type="date"
+          [(ngModel)]="loanDetails().fecha_devolucion_limite"
+          required
+          class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+        />
       </div>
     </div>
-  }
 
-  <!-- MODAL DE CONFIRMACIÓN DE DEVOLUCIÓN -->
-  @if (isReturnModalOpen()) {
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4" (click)="closeReturnModal()">
-      <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold text-red-700 mb-4">Confirmar Devolución</h3>
-        @if (selectedLoan()) {
-          <p class="mb-6 text-gray-700">
-            ¿Está seguro de que el libro 
-            <span class="font-bold text-red-600">"{{ selectedLoan()!.libro.titulo }}"</span> 
-            prestado a <span class="font-bold text-red-600">{{ selectedLoan()!.usuario.nombre }}</span> ha sido devuelto?
-          </p>
-        }
-        
-        <div class="flex justify-end space-x-3 pt-4">
-          <button type="button" (click)="closeReturnModal()"
-                  class="px-5 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150">
-            Cancelar
-          </button>
-          <button type="button" (click)="processReturn()"
-                  class="px-5 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-150 shadow-lg">
-            Sí, Confirmar Devolución
-          </button>
-        </div>
+    <div class="mt-6 flex justify-end space-x-3">
+      <button
+        (click)="closeLoanModal()"
+        class="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition duration-150"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="registerLoan()"
+        [disabled]="!selectedBook() || !loanDetails().usuario_identificador || !loanDetails().fecha_devolucion_limite"
+        class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 disabled:bg-indigo-300 transition duration-150"
+      >
+        <i class="fa-solid fa-circle-check mr-2"></i> Confirmar Préstamo
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Devolución -->
+<div *ngIf="showReturnModal() && selectedLoan()" class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 transform transition-all duration-300 scale-100">
+    <div class="flex justify-between items-center mb-4 border-b pb-3">
+      <h3 class="text-xl font-bold text-red-600">Confirmar Devolución</h3>
+      <button (click)="closeReturnModal()" class="text-gray-400 hover:text-gray-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <!-- **CORRECCIÓN 2: Uso del safe navigation operator (?.) y el operador de aserción (!)** -->
+    <div class="space-y-3">
+      <p class="text-gray-700">¿Está seguro de que desea procesar la devolución del siguiente préstamo?</p>
+      <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+        <p class="font-bold text-lg text-gray-900">Libro: <span class="font-normal">{{ selectedLoan()!.libro.titulo }}</span></p>
+        <p class="text-sm text-gray-600">Prestado a: <span class="font-medium text-gray-800">{{ selectedLoan()!.usuario.nombre }} (ID: {{ selectedLoan()!.usuario.identificador }})</span></p>
+        <p *ngIf="isOverdue(selectedLoan()!.fecha_devolucion_limite)" class="text-red-700 font-semibold mt-2">
+          <i class="fa-solid fa-hourglass-end mr-1"></i> ¡PRÉSTAMO VENCIDO!
+        </p>
       </div>
     </div>
-  }
 
+    <div class="mt-6 flex justify-end space-x-3">
+      <button
+        (click)="closeReturnModal()"
+        class="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition duration-150"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="processReturn()"
+        class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg shadow-md hover:bg-red-700 transition duration-150"
+      >
+        <i class="fa-solid fa-check mr-2"></i> Procesar Devolución
+      </button>
+    </div>
+  </div>
 </div>

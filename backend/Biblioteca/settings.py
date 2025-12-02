@@ -88,10 +88,20 @@ DATABASES = {
         }
     },
     
-    # NUEVA BASE DE DATOS PARA EL CATÁLOGO
+    # BASE DE DATOS PARA EL CATÁLOGO
     'catalogo_db': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ms_catalogo_biblioteca', 
+        'USER': 'ms_usuarios_dev', 
+        'PASSWORD': 'usuarios123',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    },
+    
+    # 🚨 NUEVA BASE DE DATOS PARA PRÉSTAMOS (¡CRÍTICO!) 
+    'prestamos_db': { # <-- Nuevo nombre de conexión
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ms_prestamos_biblioteca', # Asegúrate de que esta DB exista en MySQL
         'USER': 'ms_usuarios_dev', 
         'PASSWORD': 'usuarios123',
         'HOST': '127.0.0.1',
