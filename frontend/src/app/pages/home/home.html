@@ -36,7 +36,7 @@
         Mostrando <strong>{{ totalLibros }}</strong> libro{{ totalLibros === 1 ? '' : 's' }}.
     </p>
 
-    <!-- ⭐ Mensaje de Error (si existe) -->
+    <!-- ⭐ Mensaje de Error -->
     <div *ngIf="errorMessage" class="mensaje-estado mensaje-error">
         {{ errorMessage }}
     </div>
@@ -47,7 +47,7 @@
         <p style="color: #0d4f84; font-weight: 600;">Cargando...</p>
         <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
     </div>
-    
+
     <!-- GRID DE LIBROS -->
     <div *ngIf="!isLoading" class="libros-grid">
 
@@ -80,11 +80,12 @@
                     </span>
                 </p>
 
-                <!-- Acciones para lectores -->
-                <!-- TODO: Se necesita implementar la función solicitarPrestamo en TS -->
+                <!-- ⭐ BOTÓN FUNCIONAL DE SOLICITAR PRÉSTAMO ⭐ -->
                 <button 
-                    
-                    class="btn-prestar">
+                    class="btn-prestar"
+                    (click)="solicitarPrestamo(libro)"
+                    [disabled]="libro.copias_disponibles === 0"
+                >
                     Solicitar Préstamo
                 </button>
 

@@ -48,8 +48,8 @@ export class HomeComponent implements OnInit {
     obtenerUsuarioActual(): void {
         this.authService.fetchUserInfo().subscribe({
             next: (data: any) => {
-                // Debe contener { id, username, rol }
-                this.userId = data.id;
+                console.log("🔥 Usuario actual:", data);
+                this.userId = data.id ?? null;
             },
             error: () => {
                 console.warn("No se pudo obtener el usuario actual");
@@ -129,15 +129,15 @@ export class HomeComponent implements OnInit {
 
         this.prestamosService.solicitarPrestamo(this.userId, libro.id).subscribe({
             next: () => {
-                alert(`Solicitud enviada para el libro: ${libro.titulo}`);
+                alert(`✅ Solicitud enviada para el libro: ${libro.titulo}`);
             },
             error: (err) => {
                 console.error("Error al solicitar préstamo:", err);
 
                 if (err.error?.error === "No hay stock") {
-                    alert("No hay copias disponibles.");
+                    alert("❌ No hay copias disponibles.");
                 } else {
-                    alert("Error al enviar la solicitud.");
+                    alert("❌ Error al enviar la solicitud.");
                 }
             }
         });

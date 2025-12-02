@@ -1,6 +1,4 @@
 from django.db import models
-from MS_Usuarios.models import Usuario
-from MS_Catalogo.models import Libro
 
 class Prestamo(models.Model):
     ESTADOS = [
@@ -11,8 +9,11 @@ class Prestamo(models.Model):
         ("devuelto", "Devuelto"),
     ]
 
-    lector = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    libro = models.ForeignKey(Libro, on_delete=models.CASCADE)
+    # Dejamos de depender del microservicio de usuarios
+    lector_id = models.IntegerField()  # solo el ID del usuario
+
+    # Dejamos de depender del microservicio catálogo
+    libro_id = models.IntegerField()  # solo el ID del libro
 
     fecha_prestamo = models.DateTimeField(auto_now_add=True)
     fecha_devolucion_esperada = models.DateTimeField(null=True, blank=True)
@@ -21,4 +22,4 @@ class Prestamo(models.Model):
     esta_activo = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.lector.username} → {self.libro.titulo} ({self.estado})"
+        return f"Lector {self.lector_id} → Libro {self.libro_id} ({self.estado})"

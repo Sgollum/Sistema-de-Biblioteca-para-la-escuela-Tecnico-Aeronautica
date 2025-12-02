@@ -1,77 +1,128 @@
+<!-- src/app/pages/bibliotecario-dashboard/bibliotecario-dashboard.html -->
 <div class="dashboard-container">
+  <h1 class="titulo">
+    📊 Panel del Bibliotecario
+  </h1>
 
-  <h1 class="titulo">Panel del Bibliotecario 📘</h1>
-
-  <!-- KPI CARDS -->
+  <!-- MÉTRICAS -->
   <div class="kpi-grid">
-    <div class="kpi-card kpi-pendientes">
-      <h2>{{ pendientes }}</h2>
-      <p>Solicitudes Pendientes</p>
+    <div class="kpi-box pendiente">
+      <h3>Pendientes</h3>
+      <p>{{ pendientes }}</p>
     </div>
 
-    <div class="kpi-card kpi-aceptadas">
-      <h2>{{ aceptadas }}</h2>
-      <p>Listas para Retiro</p>
+    <div class="kpi-box listo">
+      <h3>Listos para Retiro</h3>
+      <p>{{ listosRetiro }}</p>
     </div>
 
-    <div class="kpi-card kpi-rechazadas">
-      <h2>{{ rechazadas }}</h2>
-      <p>Rechazadas</p>
+    <div class="kpi-box rechazado">
+      <h3>Rechazados</h3>
+      <p>{{ rechazados }}</p>
     </div>
 
-    <div class="kpi-card kpi-total">
-      <h2>{{ pendientes + aceptadas + rechazadas }}</h2>
-      <p>Total Procesadas</p>
+    <div class="kpi-box prestado">
+      <h3>Prestados</h3>
+      <p>{{ prestados }}</p>
+    </div>
+
+    <div class="kpi-box devuelto">
+      <h3>Devueltos</h3>
+      <p>{{ devueltos }}</p>
+    </div>
+
+    <div class="kpi-box total">
+      <h3>Total Solicitudes</h3>
+      <p>{{ totalSolicitudes }}</p>
+    </div>
+
+    <div class="kpi-box tasa">
+      <h3>Aprobación</h3>
+      <p>{{ tasaAprobacion }}%</p>
+    </div>
+
+    <div class="kpi-box tasa-rechazo">
+      <h3>Rechazo</h3>
+      <p>{{ tasaRechazo }}%</p>
     </div>
   </div>
 
-  <!-- TABLA -->
-  <div class="tabla-container">
+  <!-- FILA: GRÁFICO + RANKING -->
+  <div class="cards-row">
+    <!-- Gráfico -->
+    <div class="card card-chart">
+      <div class="card-header">📈 Estado de Solicitudes</div>
+      <div class="card-body chart-body">
+        <canvas id="chartEstados"></canvas>
+      </div>
+    </div>
 
-    <h2>Solicitudes de Préstamo</h2>
+    <!-- Ranking libros -->
+    <div class="card card-ranking">
+      <div class="card-header">📚 Libros más solicitados</div>
+      <div class="card-body ranking-body">
+        <ul *ngIf="rankingLibros.length > 0; else noRanking">
+          <li *ngFor="let item of rankingLibros">
+            <span class="ranking-titulo">
+              <strong>{{ item.titulo }}</strong>
+            </span>
+            <span class="ranking-count">
+              {{ item.cantidad }} solicitudes
+            </span>
+          </li>
+        </ul>
 
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Libro</th>
-          <th>Usuario</th>
-          <th>Fecha</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
+        <ng-template #noRanking>
+          <p class="empty-text">
+            Aún no hay suficientes datos para mostrar el ranking.
+          </p>
+        </ng-template>
+      </div>
+    </div>
+  </div>
 
-      <tbody>
-        <tr *ngFor="let s of solicitudes">
-          <td>{{ s.id }}</td>
-          <td>{{ s.tituloLibro }}</td>
-          <td>{{ s.usuarioId }}</td>
-          <td>{{ s.fechaSolicitud | date:'yyyy-MM-dd' }}</td>
+  <!-- SOLICITUDES -->
+  <div class="card card-solicitudes">
+    <div class="card-header">🧾 Solicitudes</div>
+    <div class="card-body">
+      <p *ngIf="solicitudes.length === 0" class="empty-text">
+        No hay solicitudes registradas.
+      </p>
 
-          <td>
-            <span class="tag" [ngClass]="s.estado.toLowerCase()">
+      <ul *ngIf="solicitudes.length > 0" class="solicitudes-list">
+        <li *ngFor="let s of solicitudes" class="solicitud-item">
+          <div class="solicitud-texto">
+            <strong>{{ s.lector_nombre }}</strong>
+            pidió <span class="libro">{{ s.libro_titulo }}</span>
+          </div>
+
+          <div class="solicitud-meta">
+            <span class="badge-estado" [ngClass]="s.estado">
               {{ s.estado }}
             </span>
-          </td>
 
-          <td>
-            <button class="btn-aceptar" 
-                    (click)="aceptarSolicitud(s.id)"
-                    *ngIf="s.estado === 'Pendiente'">
-              ✔ Aceptar
+            <button
+              class="btn aceptar"
+              *ngIf="s.estado === 'pendiente'"
+              (click)="aceptarSolicitud(s.id)"
+            >
+              Aceptar
             </button>
 
-            <button class="btn-rechazar" 
-                    (click)="rechazarSolicitud(s.id)"
-                    *ngIf="s.estado === 'Pendiente'">
-              ✖ Rechazar
+            <button
+              class="btn rechazar"
+              *ngIf="s.estado === 'pendiente'"
+              (click)="rechazarSolicitud(s.id)"
+            >
+              Rechazar
             </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
-
 </div>
+
+
+
+

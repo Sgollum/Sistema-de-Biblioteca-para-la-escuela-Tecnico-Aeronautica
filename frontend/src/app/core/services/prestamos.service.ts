@@ -12,23 +12,28 @@ export class PrestamosService {
 
   constructor(private http: HttpClient) {}
 
-  // 📌 Solicitar préstamo desde el catálogo
-  solicitarPrestamo(lectorId: number, libroId: number): Observable<any> {
-    const payload = {
-      lector_id: lectorId,
+  // 📌 ENVIAR SOLICITUD DE PRÉSTAMO
+  solicitarPrestamo(usuarioId: number, libroId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}solicitar/`, {
+      lector_id: usuarioId,
       libro_id: libroId
-    };
-
-    return this.http.post(this.apiUrl, payload);
+    });
   }
 
-  // 📌 Obtener todas las solicitudes (panel bibliotecario)
+  // 📌 OBTENER TODAS LAS SOLICITUDES (NO SOLO PENDIENTES)
   obtenerSolicitudes(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<any[]>(`${this.apiUrl}pendientes/`);
   }
 
-  // 📌 Actualizar estado (Aceptar, Rechazar, Listo para Retiro)
-  actualizarEstado(id: number, nuevoEstado: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}${id}/`, { estado: nuevoEstado });
+  // 📌 ACEPTAR PRÉSTAMO
+  aceptarPrestamo(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}aceptar/${id}/`, {});
+  }
+
+  // 📌 RECHAZAR PRÉSTAMO
+  rechazarPrestamo(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}rechazar/${id}/`, {});
   }
 }
+
+

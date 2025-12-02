@@ -4,11 +4,10 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Prestamo
 from .serializers import PrestamoSerializer
-
 from MS_Catalogo.models import Libro
 
+
 class CrearPrestamoView(generics.CreateAPIView):
-    queryset = Prestamo.objects.all()
     serializer_class = PrestamoSerializer
     permission_classes = [IsAuthenticated]
 
@@ -22,7 +21,7 @@ class CrearPrestamoView(generics.CreateAPIView):
         libro = Libro.objects.get(id=libro_id)
 
         if libro.copias_disponibles <= 0:
-            return Response({"error": "No hay stock"}, status=400)
+            return Response({"error": "Sin stock"}, status=400)
 
         prestamo = Prestamo.objects.create(
             lector_id=lector_id,
@@ -34,9 +33,11 @@ class CrearPrestamoView(generics.CreateAPIView):
 
 
 class ListaPendientesView(generics.ListAPIView):
-    queryset = Prestamo.objects.filter(estado="pendiente")
     serializer_class = PrestamoSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Prestamo.objects.all().order_by('-fecha_prestamo')
 
 
 class AceptarPrestamoView(generics.UpdateAPIView):
@@ -46,7 +47,7 @@ class AceptarPrestamoView(generics.UpdateAPIView):
 
     def patch(self, request, pk):
         prestamo = Prestamo.objects.get(id=pk)
-        libro = prestamo.libro
+        libro = Libro.objects.get(id=prestamo.libro_id)
 
         if libro.copias_disponibles <= 0:
             return Response({"error": "Sin stock"}, status=400)
